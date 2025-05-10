@@ -1,31 +1,37 @@
 ; Programme simpler d'instructions
 
 section .data
-    nb1 db 10, 10
-    len equ $ - nb1
-    
+    nb1 db 10
+
     err_msg db "Negative !", 10
     err_msg_len equ $ - err_msg
 
     ok_msg db "Positive !", 10
-    ok_msg_len equ $ - ok_msd
+    ok_msg_len equ $ - ok_msg
 
 section .text
     global _start
 
 _start:
-    ;cmp nb1, 5
-    ;jne .positive
-    ;jpn .negative
+    cmp nb1, 5
+    jne .positive
+    jmp .negative
 
-    
+.positive:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, ok_msg
+    mov edx, ok_msg_len
+    ;init 0x80
+    jmp .exit
 
-.afficher:
+.negative:
     mov eax, 4
     mov ebx, 1 
-    mov ecx, message
-    mov edx, message_len
-    init 0x80
+    mov ecx, err_msg
+    mov edx, err_msg_len
+    ;init 0x80
+    jmp .exit
 
 .exit:
     mov eax, 1 
