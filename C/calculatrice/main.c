@@ -17,9 +17,12 @@ double Request(char chaine[]) {
 
 int main() {
   
-  double test = Request("Veuillez entrer un numéro: ");
+  double number1 = Request("Veuillez entrer un numéro: ");
+  double number2 = Request("Veuillez entrer le 2ème numéro: ");
   
-  printf("result: %lf", test);
+  double result = number2 + number1;
+  
+  printf("result: %lf", result);
 
   return 0;
 
