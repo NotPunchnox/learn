@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours : Prédicats et Quantificateurs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #ffffff;
+            --card-bg: #2c2c2c;
+            --link-color: #3498db;
+            --link-hover: #5dade2;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --card-bg: #f9f9f9;
+            --link-color: #2980b9;
+            --link-hover: #3498db;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            color: var(--text-color);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 5px;
+        }
+
+        .math { font-size: 1.1em; }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--link-hover);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()">🌓 Changer le thème</div>
+    <div class="container">
+        <h1>Cours : Prédicats et Quantificateurs</h1>
+        <p><a href="../index.html">Retour à l'accueil</a></p>
+
+        <h2>1. Rappel sur les Prédicats</h2>
+        <p>Un <strong>prédicat</strong> est une expression logique qui dépend d'une ou plusieurs variables et qui devient une proposition (vrai ou faux) lorsqu'on attribue des valeurs aux variables. Par exemple, \( P(x, y) : x^2 + y = 0 \) est un prédicat à deux variables. Si \( x = 2 \) et \( y = -4 \), alors \( P(2, -4) \) est vrai.</p>
+
+        <h2>2. Quantificateurs et leurs interactions</h2>
+        <p>Les <strong>quantificateurs</strong> (\(\forall\) pour "pour tout" et \(\exists\) pour "il existe") permettent de généraliser ou de spécifier l'étendue des variables dans un prédicat. L'ordre des quantificateurs est crucial :</p>
+        <ul>
+            <li>\( \forall x \exists y, P(x, y) \) signifie que pour chaque \( x \), il existe un \( y \) tel que \( P(x, y) \) est vrai.</li>
+            <li>\( \exists y \forall x, P(x, y) \) signifie qu'il existe un \( y \) unique tel que pour tout \( x \), \( P(x, y) \) est vrai (ordre inversé, sens différent).</li>
+        </ul>
+        <p>La négation des quantificateurs suit les règles de De Morgan :</p>
+        <ul>
+            <li>\( \neg (\forall x, P(x)) \equiv \exists x, \neg P(x) \)</li>
+            <li>\( \neg (\exists x, P(x)) \equiv \forall x, \neg P(x) \)</li>
+        </ul>
+        <p>Pour des prédicats complexes, il faut appliquer ces règles récursivement, en tenant compte de l'ordre des quantificateurs.</p>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme') || 'dark';
+            body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+        document.body.setAttribute('data-theme', 'dark');
+    </script>
+</body>
+</html>

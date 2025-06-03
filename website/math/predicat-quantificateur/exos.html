@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices : Prédicats et Quantificateurs</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #ffffff;
+            --card-bg: #2c2c2c;
+            --link-color: #3498db;
+            --link-hover: #5dade2;
+            --toggle-bg: #3498db;
+            --toggle-hover: #5dade2;
+            --corrige-bg: #2ecc71;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --card-bg: #f9f9f9;
+            --link-color: #2980b9;
+            --link-hover: #3498db;
+            --toggle-bg: #2980b9;
+            --toggle-hover: #3498db;
+            --corrige-bg: #27ae60;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 5px;
+        }
+
+        .exercice, .corrige {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .corrige {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            border-left: 4px solid var(--corrige-bg);
+        }
+
+        .corrige.show {
+            max-height: 1000px; /* Valeur suffisamment grande pour afficher tout le contenu */
+            padding: 15px;
+        }
+
+        .toggle-btn {
+            background: var(--toggle-bg);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: var(--toggle-hover);
+        }
+
+        .math { font-size: 1.1em; }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--link-hover);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .exercice, .corrige {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()">🌓 Changer le thème</div>
+    <div class="container">
+        <h1>Exercices : Prédicats et Quantificateurs</h1>
+        <p><a href="index.html">Retour à l'accueil</a> | <a href="cours_predicats_quantificateurs.html">Voir le cours</a></p>
+
+        <h2>Exercices complexes</h2>
+        <div class="exercice">
+            <h3>Exercice 1</h3>
+            <p>Soit le prédicat \( P(x, y) : x^2 + y^2 \leq 1 \) défini sur \( \mathbb{R} \times \mathbb{R} \). Traduisez en langage naturel les expressions suivantes, puis déterminez si elles sont vraies ou fausses :</p>
+            <ol>
+                <li>\( \forall x \in [-1, 1], \exists y \in \mathbb{R}, P(x, y) \)</li>
+                <li>\( \exists y \in \mathbb{R}, \forall x \in [-1, 1], P(x, y) \)</li>
+            </ol>
+            <button class="toggle-btn" onclick="toggleCorrige('corrige1')">Afficher/Masquer le corrigé</button>
+            <div id="corrige1" class="corrige">
+                <h3>Corrigé Exercice 1</h3>
+                <ol>
+                    <li><strong>Traduction</strong> : Pour tout \( x \) dans \([-1, 1]\), il existe un \( y \) réel tel que \( x^2 + y^2 \leq 1 \).<br>
+                        <strong>Véracité</strong> : Vrai. Pour tout \( x \in [-1, 1] \), on peut choisir \( y = 0 \), car \( x^2 + 0^2 = x^2 \leq 1 \), ce qui satisfait \( P(x, y) \).</li>
+                    <li><strong>Traduction</strong> : Il existe un \( y \) réel tel que pour tout \( x \in [-1, 1] \), \( x^2 + y^2 \leq 1 \).<br>
+                        <strong>Véracité</strong> : Faux. Supposons qu’un tel \( y \) existe. Pour \( x = 1 \), on a \( 1 + y^2 \leq 1 \), donc \( y^2 = 0 \), soit \( y = 0 \). Mais il n’existe pas un seul \( y \) qui fonctionne pour tout \( x \in [-1, 1] \), car les valeurs de \( y \) dépendent de \( x \).</li>
+                </ol>
+            </div>
+        </div>
+        <div class="exercice">
+            <h3>Exercice 2</h3>
+            <p>Soit \( Q(x, y, z) : x + y = z \) défini sur \( \mathbb{Z} \times \mathbb{Z} \times \mathbb{Z} \). Écrivez les expressions suivantes en utilisant des quantificateurs, puis analysez leur véracité :</p>
+            <ol>
+                <li>Pour tout entier \( z \), il existe deux entiers \( x \) et \( y \) tels que \( x + y = z \).</li>
+                <li>Il existe un entier \( x \) tel que pour tout entier \( y \), il existe un entier \( z \) tel que \( x + y = z \).</li>
+            </ol>
+            <button class="toggle-btn" onclick="toggleCorrige('corrige2')">Afficher/Masquer le corrigé</button>
+            <div id="corrige2" class="corrige">
+                <h3>Corrigé Exercice 2</h3>
+                <ol>
+                    <li><strong>Expression</strong> : \( \forall z \in \mathbb{Z}, \exists x, y \in \mathbb{Z}, x + y = z \).<br>
+                        <strong>Véracité</strong> : Vrai. Pour tout \( z \in \mathbb{Z} \), on peut choisir \( x = z \) et \( y = 0 \), car \( x + y = z + 0 = z \).</li>
+                    <li><strong>Expression</strong> : \( \exists x \in \mathbb{Z}, \forall y \in \mathbb{Z}, \exists z \in \mathbb{Z}, x + y = z \).<br>
+                        <strong>Véracité</strong> : Vrai. Prenons \( x = 0 \). Pour tout \( y \in \mathbb{Z} \), choisissez \( z = y \), car \( 0 + y = y \). Ainsi, il existe un \( x \) (ici \( x = 0 \)) qui satisfait la condition.</li>
+                </ol>
+            </div>
+        </div>
+        <div class="exercice">
+            <h3>Exercice 3</h3>
+            <p>Négation des propositions suivantes, puis simplifiez l'expression obtenue :</p>
+            <ol>
+                <li>\( \forall x \in \mathbb{R}, \exists y \in \mathbb{R}, x^2 - y = 0 \)</li>
+                <li>\( \exists x \in \mathbb{N}, \forall y \in \mathbb{N}, x \cdot y = y \)</li>
+            </ol>
+            <button class="toggle-btn" onclick="toggleCorrige('corrige3')">Afficher/Masquer le corrigé</button>
+            <div id="corrige3" class="corrige">
+                <h3>Corrigé Exercice 3</h3>
+                <ol>
+                    <li><strong>Négation</strong> : \( \neg (\forall x \in \mathbb{R}, \exists y \in \mathbb{R}, x^2 - y = 0) \equiv \exists x \in \mathbb{R}, \forall y \in \mathbb{R}, x^2 - y \neq 0 \).<br>
+                        <strong>Simplification</strong> : L'expression \( x^2 - y \neq 0 \) équivaut à \( y \neq x^2 \). Ainsi, la négation devient : "Il existe un réel \( x \) tel que pour tout réel \( y \), \( y \neq x^2 \)." Cette proposition est fausse, car pour tout \( x \), on peut choisir \( y = x^2 \), rendant \( x^2 - y = 0 \).</li>
+                    <li><strong>Négation</strong> : \( \neg (\exists x \in \mathbb{N}, \forall y \in \mathbb{N}, x \cdot y = y) \equiv \forall x \in \mathbb{N}, \exists y \in \mathbb{N}, x \cdot y \neq y \).<br>
+                        <strong>Simplification</strong> : La condition \( x \cdot y = y \) équivaut à \( x = 1 \) (si \( y \neq 0 \)). La négation devient : "Pour tout \( x \in \mathbb{N} \), il existe un \( y \in \mathbb{N} \) tel que \( x \cdot y \neq y \)." C'est vrai, car pour \( x \neq 1 \), on peut choisir \( y = 2 \), et \( x \cdot 2 \neq 2 \).</li>
+                </ol>
+            </div>
+        </div>
+        <div class="exercice">
+            <h3>Exercice 4</h3>
+            <p>Soit \( R(x, y) : |x - y| < 1 \) défini sur \( \mathbb{R} \times \mathbb{R} \). Écrivez une expression avec des quantificateurs pour exprimer : "Pour tout réel \( x \), il existe un réel \( y \) distinct de \( x \) tel que \( |x - y| < 1 \)". Ensuite, déterminez si cette proposition est vraie.</p>
+            <button class="toggle-btn" onclick="toggleCorrige('corrige4')">Afficher/Masquer le corrigé</button>
+            <div id="corrige4" class="corrige">
+                <h3>Corrigé Exercice 4</h3>
+                <p><strong>Expression</strong> : \( \forall x \in \mathbb{R}, \exists y \in \mathbb{R}, y \neq x \wedge |x - y| < 1 \).<br>
+                    <strong>Véracité</strong> : Vrai. Pour tout \( x \in \mathbb{R} \), on peut choisir \( y = x + 0.5 \) (par exemple). Alors, \( y \neq x \) (car \( 0.5 \neq 0 \)) et \( |x - y| = |x - (x + 0.5)| = 0.5 < 1 \). Ainsi, la condition est satisfaite pour tout \( x \).</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme') || 'dark';
+            body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+        function toggleCorrige(id) {
+            const corrige = document.getElementById(id);
+            corrige.classList.toggle('show');
+        }
+
+        document.body.setAttribute('data-theme', 'dark');
+    </script>
+</body>
+</html>

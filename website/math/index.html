@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Cours de Math</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #ffffff;
+            --card-bg: #2c2c2c;
+            --link-color: #3498db;
+            --link-hover: #5dade2;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --card-bg: #f9f9f9;
+            --link-color: #2980b9;
+            --link-hover: #3498db;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 5px;
+        }
+
+        .course-list {
+            display: grid;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .course-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .course-card a {
+            color: var(--link-color);
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .course-card a:hover {
+            color: var(--link-hover);
+        }
+
+        .course-card p {
+            margin: 10px 0 0;
+            font-size: 0.9em;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .course-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()">🌓 Changer le thème</div>
+    <div class="container">
+        <h1>Cours de Math</h1>
+        <p>Bienvenue sur la plateforme des cours de logique. Consultez les cours et exercices ci-dessous :</p>
+        <div class="course-list">
+            <div class="course-card">
+                <a href="./predicat-quantificateur/cours.html">Cours : Prédicats et Quantificateurs</a>
+                <p>Cours avancé sur les prédicats et quantificateurs.</p>
+            </div>
+            <div class="course-card">
+                <a href="./predicat-quantificateur/exos.html">Exercices : Prédicats et Quantificateurs</a>
+                <p>Exercices complexes avec corrigés interactifs.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme') || 'dark';
+            body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+        document.body.setAttribute('data-theme', 'dark');
+    </script>
+</body>
+</html>
