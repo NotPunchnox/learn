@@ -3,10 +3,9 @@
 #include <math.h>
 
 // Fonciton de calcul du taux d'erreur ( Log vraisemblance négative )
-// formule: (sortie_attendue * log(prediction) + (1 - sortie_attendue) * log(1 - prediction))
+// formule: -(sortie_attendue * log(prediction) + (1 - sortie_attendue) * log(1 - prediction))
 double Loss(double prediction, double sortie_attendue) {
-  double result = (sortie_attendue * log(prediction)) + ((1 - sortie_attendue) * log(1 - prediction));
-  printf("Loss: %d; Prediction: %d; st: %d\n", result, prediction, sortie_attendue);
+  double result = -(sortie_attendue * log(prediction)) + ((1 - sortie_attendue) * log(1 - prediction));
   return result;
 }
 
@@ -20,27 +19,33 @@ int main() {
   
   // Déclaration des variables
 
-  // exemples de données sur l'opérateur logique XOR ( OU exclusif )
+  // exemples de données sur l'opérateur logique AND
   double x[4][2] = {
-    {1, 0},
+    {0, 0},
     {0, 1},
-    {1, 1},
-    {0, 0}
+    {1, 0},
+    {1, 1}
   };
-  double yy[4] = {1, 1, 0, 0};
+  double yy[4] = {
+    0, // 0 AND 0 = 0
+    0, // 0 AND 1 = 0
+    0, // 1 AND 0 = 0
+    1  // 1 AND 1 = 1
+  };
 
   double w[2] = {0.5, -1};
   double b = 1;
   double learning_rate = 0.1;
 
   // Boucle d'entrainement
-  for (int epoch = 0; epoch < 5; epoch++) {
+  for (int epoch = 0; epoch < 500; epoch++) {
 
     // boucle sur les données
-    for (int i = 0; i < sizeof(x) / sizeof(x)[0]; i++) {
+    for (int i = 0; i < sizeof(x) / sizeof(x[0]); i++) {
       // Calcul de la sortie du perceptron
       double y = (x[i][0] * w[0]) + (x[i][1] * w[1]) + b;
       double p = activation(y);
+
       double error = Loss(p, yy[i]);
       
       // Mise à jour des poids et du biais
@@ -62,10 +67,12 @@ int main() {
   printf("Final weights: w1 = %f, w2 = %f, b = %f\n", w[0], w[1], b);
 
   // Test du perceptron sur les données d'entrainement
-  for (int i = 0; i < sizeof(x) / sizeof(x)[0]; i++) {
+  for (int i = 0; i < sizeof(x) / sizeof(x[0]); i++) {
     double y = (x[i][0] * w[0]) + (x[i][1] * w[1]) + b;
     double p = activation(y);
-    printf("Input: (%d, %d) -> Prediction: %f, Expected: %d\n", x[i][0], x[i][1], p, yy[i]);
+
+    printf("Input: (%f, %f) => Prediction: %f, Expected: %f\n", x[i][0], x[i][1], p, yy[i]);
+
   }
 
   return 0;
