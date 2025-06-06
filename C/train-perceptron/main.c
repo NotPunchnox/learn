@@ -38,7 +38,7 @@ int main() {
   double learning_rate = 0.1;
 
   // Boucle d'entrainement
-  for (int epoch = 0; epoch < 500; epoch++) {
+  for (int epoch = 0; epoch < 5000; epoch++) {
 
     // boucle sur les données
     for (int i = 0; i < sizeof(x) / sizeof(x[0]); i++) {
