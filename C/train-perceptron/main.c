@@ -72,7 +72,6 @@ int main() {
     double p = activation(y);
 
     printf("Input: (%f, %f) => Prediction: %f, Expected: %f\n", x[i][0], x[i][1], p, yy[i]);
-
   }
 
   return 0;
