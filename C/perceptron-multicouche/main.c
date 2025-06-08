@@ -9,8 +9,7 @@ double Loss(double prediction, double sortie_attendue) {
   // Ajout de elipson constante pour éviter log(0)
   const double epsilon = 1e-15;
   prediction = fmax(epsilon, fmin(1.0 - epsilon, prediction));
-  return -(sortie_attendue * log(prediction) +
-           (1.0 - sortie_attendue) * log(1.0 - prediction));
+  return -(sortie_attendue * log(prediction) + (1.0 - sortie_attendue) * log(1.0 - prediction));
 }
 
 // Fonction d'activation sigmoïde
@@ -35,7 +34,7 @@ int main() {
   double x[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
   double yy[4] = {0, 1, 1, 0};
 
-  // Initialisation des poids et biais
+  // Initialisation des poids et biais>
   double ***w = malloc(nb_layers * sizeof(double **));
   double **b = malloc(nb_layers * sizeof(double *));
   int inputs_per_layer[] = {nb_inputs, nb_neurons[0]};
@@ -120,8 +119,7 @@ int main() {
     for (int neuron = 0; neuron < nb_neurons[layer]; neuron++) {
       printf("  Neurone %d : ", neuron);
       for (int input = 0; input < inputs_per_layer[layer]; input++) {
-        printf("w[%d][%d][%d] = %f ", layer, neuron, input,
-               w[layer][neuron][input]);
+        printf("w[%d][%d][%d] = %f ", layer, neuron, input, w[layer][neuron][input]);
       }
       printf("b[%d][%d] = %f\n", layer, neuron, b[layer][neuron]);
     }
@@ -134,9 +132,8 @@ int main() {
     double *layer_inputs = malloc(nb_neurons[0] * sizeof(double));
     for (int j = 0; j < nb_neurons[0]; j++) {
       layer_inputs[j] = b[0][j];
-      for (int k = 0; k < nb_inputs; k++) {
-        layer_inputs[j] += x[i][k] * w[0][j][k];
-      }
+      for (int k = 0; k < nb_inputs; k++) layer_inputs[j] += x[i][k] * w[0][j][k];
+
       layer_outputs[j] = sigmoid(layer_inputs[j]);
     }
     double final_output = b[1][0];
@@ -144,8 +141,7 @@ int main() {
       final_output += layer_outputs[j] * w[1][0][j];
     }
     final_output = sigmoid(final_output);
-    printf("Entrée: (%f, %f) => Prédiction: %f, Attendu: %f\n", x[i][0],
-           x[i][1], final_output, yy[i]);
+    printf("Entrée: (%f, %f) => Prédiction: %f, Attendu: %f\n", x[i][0], x[i][1], final_output, yy[i]);
     free(layer_outputs);
     free(layer_inputs);
   }
