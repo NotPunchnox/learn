@@ -35,17 +35,13 @@ int main() {
   double yy[4] = {0, 1, 1, 0};
 
   // Initialisation des poids et biais
-  double w[2][2][3]; // 2 couches, 2 neurones dans la couche 2, 3 entrées dans
-                     // la couche 1
+  double w[2][2][3]; // 2 couches, 2 neurones dans la couche 2, 3 entrées dans la couche 1
   double b[2][2];    // 2 couches, 2 neurones dans la couche 2
 
   // Initialisation aléatoire des poids et biais
   for (int layer = 0; layer < 2; layer++) {
-    for (int neuron = 0;
-         neuron < (layer == 0 ? nb_neurons_layer1 : nb_neurons_layer2);
-         neuron++) {
-      for (int input = 0; input < (layer == 0 ? nb_inputs : nb_neurons_layer1);
-           input++) {
+    for (int neuron = 0;neuron < (layer == 0 ? nb_neurons_layer1 : nb_neurons_layer2);neuron++) {
+      for (int input = 0; input < (layer == 0 ? nb_inputs : nb_neurons_layer1); input++) {
         // Poids aléatoires entre [-0.1, 0.1]
         w[layer][neuron][input] = ((double)rand() / RAND_MAX) * 0.2 - 0.1;
       }

@@ -3,8 +3,7 @@
 #include <stdlib.h>
 
 // Fonction de calcul de la perte (log-vraisemblance négative)
-// Formule : -[sortie_attendue * log(prediction) + (1 - sortie_attendue) * log(1
-// - prediction)]
+// Formule : -[sortie_attendue * log(prediction) + (1 - sortie_attendue) * log(1 - prediction)]
 double Loss(double prediction, double sortie_attendue) {
   // Ajout de elipson constante pour éviter log(0)
   const double epsilon = 1e-15;
