@@ -4,7 +4,7 @@ from math import *
 
 # Fonction de calcul du taux d'erreur ( log-vraisemblance négative )
 def Loss(prediction, sortie_attendue):
-    return (sortie_attendue * np.log(prediction) + (1 - sortie_attendue) * np.log(1 - prediction))
+    return -(sortie_attendue * np.log(prediction) + (1 - sortie_attendue) * np.log(1 - prediction))
 
 # Fonction sigmoïde
 def sigmoide(y):
@@ -30,7 +30,7 @@ def main():
         [0, 0],
         [1, 0],
         [0, 1],
-        [0, 0],
+        [1, 1],
     ]
     yy = [0, 1, 1, 0]
 
@@ -43,7 +43,7 @@ def main():
         w[layer] = {}
 
         for neuron in range(nb_neurons_per_layers[layer]):
-            b[layer][neuron] = 1
+            b[layer][neuron] = random.uniform(-0.1, 0.1)
             
             if layer == 0:
                 w[layer][neuron] = []
@@ -78,14 +78,14 @@ def main():
 
                 # Lister les neurones de la couche ( layer )
                 for n in range(nb_neurons_per_layers[layer]):
-                    layer_inputs[layer][n] = b[layer][neuron]
+                    layer_inputs[layer][n] = b[layer][n]
                     
                     if layer == 0:
                         for k in range(nb_inputs):
                             layer_inputs[layer][n] += x[i][k] * w[layer][n][k]
                     else:
                         for k in range(len(w[layer][n])):
-                            layer_inputs[layer][n] += layer_output[layer-1][n]
+                            layer_inputs[layer][n] += layer_output[layer-1][k] * w[layer][n][k]
 
                     layer_output[layer][n] = sigmoide(layer_inputs[layer][n])
             
@@ -107,8 +107,8 @@ def main():
                     else:
                         delta_hidden = 0
                         for k in range(len(w[layer][n])):
-                            delta_hidden = delta * w[layer][n][k] * sigmoide_derivative(layer_inputs[layer][n])
-                            w[layer][n][k] -= learning_rate * delta_hidden * layer_output[layer][n]
+                            delta_hidden += delta * w[layer][n][k] * sigmoide_derivative(layer_inputs[layer][n])
+                            w[layer][n][k] -= learning_rate * delta_hidden * layer_output[layer][k]
                         b[layer][n] -= learning_rate * delta_hidden
 
         # Afficher les stats
