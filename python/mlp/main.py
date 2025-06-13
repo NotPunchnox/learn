@@ -70,6 +70,31 @@ def main():
     print(b)
     print(w)
 
+    layer_inputs = {}
+    layer_output = {}
+
     # Boucle d'entrainement
+    for epoch in range(max_epochs):
+        total_error = 0
+
+        # Lister les instructions de la dataset x
+        for i in range(len(x)):
+
+            # Lister les couches
+            for layer in range(nb_layers):
+                layer_inputs[layer] = {}
+                layer_output[layer] = {}
+
+                # Lister les neurones de la couche ( layer )
+                for n in range(nb_neurons_per_layers[layer]):
+                    layer_inputs[layer][n] = b[layer][neuron]
+                    
+                    if layer == 0:
+                        for k in range(nb_inputs):
+                            layer_inputs[layer][n] += x[i][k] * w[layer][n][k]
+                    
+                    layer_output[layer][n] = sigmoide(layer_inputs[layer][n])
+                    
+
 
 main()
