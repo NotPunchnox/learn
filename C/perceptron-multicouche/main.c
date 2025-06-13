@@ -92,8 +92,7 @@ int main() {
       // Rétropropagation vers la couche 1
       double *delta_hidden = malloc(nb_neurons[0] * sizeof(double));
       for (int j = 0; j < nb_neurons[0]; j++) {
-        delta_hidden[j] =
-            delta * w[1][0][j] * sigmoid_derivative(layer_inputs[j]);
+        delta_hidden[j] = delta * w[1][0][j] * sigmoid_derivative(layer_inputs[j]);
         for (int k = 0; k < nb_inputs; k++) {
           w[0][j][k] -= learning_rate * delta_hidden[j] * x[i][k];
         }
