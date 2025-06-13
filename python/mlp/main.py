@@ -21,10 +21,10 @@ def sigmoide_derivative(y):
 def main():
 
     # constantes
-    learning_rate = 0.5
-    max_epochs = 10000
-    nb_layers = 3
-    nb_neurons_per_layers = [3, 3, 1, 8]
+    learning_rate = 0.2
+    max_epochs = 5000
+    nb_layers = 2
+    nb_neurons_per_layers = [2, 1]
     nb_inputs = 2
 
     # Données d'entrainement ( XOR )
