@@ -1,4 +1,4 @@
-Explications des expressions avec la valeur absolue
+# Explications des expressions avec la valeur absolue
 
 La **valeur absolue** d’un nombre \( x \), notée \( |x| \), représente la distance de \( x \) à zéro sur la droite réelle, sans tenir compte de son signe. Par exemple :
 - \( |3| = 3 \),
