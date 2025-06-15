@@ -41,23 +41,8 @@ def main():
     b = {}
 
     for layer in range(nb_layers):
-        b[layer] = {}
-        w[layer] = {}
-
-        for neuron in range(nb_neurons_per_layers[layer]):
-            b[layer][neuron] = random.uniform(-0.1, 0.1)
-            
-            if layer == 0:
-                w[layer][neuron] = []
-
-                for input in range(nb_inputs):
-                    w[layer][neuron].append(random.random())
-            
-            else:
-                w[layer][neuron] = []
-
-                for input in range(nb_neurons_per_layers[layer -1]):
-                    w[layer][neuron].append(random.random())
+        b[layer] = np.random.uniform(-0.1, 0.1, nb_neurons_per_layers[layer])
+        w[layer] = np.random.random((nb_neurons_per_layers[layer], nb_inputs if layer == 0 else nb_neurons_per_layers[layer-1]))
 
     print(b)
     print(w)
