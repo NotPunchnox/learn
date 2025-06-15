@@ -24,35 +24,5 @@ double sigmoid_derivative(double y) {
 
 int main() {
 
-  const int nb_inputs = 2;
-  const int nb_output = 1;
-  const int nb_layers = 3;
-  const int epochs = 500;
-  const double learning_rate = 0.1;
-
-  // Initialisation des données d'entrainement
-  const int x[4][2] = {
-    {0, 0}, 
-    {1, 0}, 
-    {0, 1}, 
-    {1, 1}
-  };
-  const int yy[4] = {0, 1, 1, 0};
-
-  // Nombre de neurons par couche
-  int nb_neurons[] = {3, 3, 1};
-
-
-  // Initialisation des poids et biais
-  double w[nb_layers][3];
-  double b[nb_layers][3];
-
-  // Initialisation aléatoire des poids et biais
-  for (int layer = 0; layer < nb_layers; layer++) {
-    for (int neuron = 0; neuron < nb_neurons[layer]; neuron++) {
-
-    }
-  }
-
-  return 0;
+  
 }
