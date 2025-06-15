@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define learning_rate 0.1
 #define max_epochs 5000
@@ -13,12 +14,13 @@ const int nb_neurons_per_layer[nb_layers] = {2, 1};
 double Loss(double prediction, double sortie_attendue) {
   const double epsilon = 1e-15;
   prediction = fmax(epsilon, fmin(1.0 - epsilon, prediction));
-  return -(sortie_attendue * log(prediction) +
-           (1.0 - sortie_attendue) * log(1.0 - prediction));
+  return -(sortie_attendue * log(prediction) + (1.0 - sortie_attendue) * log(1.0 - prediction));
 }
 
 // Fonction d'activation sigmoïde
-double sigmoid(double y) { return 1.0 / (1.0 + exp(-y)); }
+double sigmoid(double y) {
+  return 1.0 / (1.0 + exp(-y));
+}
 
 // Dérivée de la fonction sigmoïde
 double sigmoid_derivative(double y) {
@@ -37,10 +39,22 @@ int main() {
   };
   const int yy[4] = {0, 1, 1, 0};
 
+  // Lister les couches
   for (int layer = 0; layer < nb_layers; layer++) {
-    double **b = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double));
-    double **w = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double));
+
+    // Définir les poids et biais dans la mémoire afin d'avoir des tableaux dynamiques
+    double **b = (double **)malloc(nb_layers * sizeof(double));
+    double **w = (double **)malloc(nb_layers * sizeof(double));
  
+    for (int neuron = 0; neuron < nb_neurons_per_layer[layer]; neuron ++) {
+      *b = (double *)malloc(nb_neurons_per_layer[layer] *sizeof(double));
+      b[layer][neuron] = ((double)rand() / RAND_MAX) * 0.2 - 0.1;
+
+      for (int input = 0; input < nb_inputs; input ++) {
+
+      }
+
+    }
  
   }
 
