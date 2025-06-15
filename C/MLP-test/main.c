@@ -5,10 +5,10 @@
 
 #define learning_rate 0.1
 #define max_epochs 5000
-#define nb_layers 5
+#define nb_layers 2
 #define nb_inputs 2
 
-const int nb_neurons_per_layer[nb_layers] = {30, 15};
+const int nb_neurons_per_layer[nb_layers] = {2, 1};
 
 // Fonction de calcul de la perte (log-vraisemblance négative)
 double Loss(double prediction, double sortie_attendue) {
@@ -102,14 +102,10 @@ int main() {
 
       // Lister les couches du réseau
       for (int layer = 0; layer < nb_layers; layer++) {
-        layer_inputs[layer] = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double *));
-        layer_output[layer] = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double *));
+        layer_inputs[layer] = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double));
+        layer_output[layer] = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double));
 
         for (int neuron = 0; neuron < nb_neurons_per_layer[layer]; neuron++) {
-
-          layer_inputs[layer] = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double));
-          layer_output[layer] = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double));
-
           // Ajouter le biais
           layer_inputs[layer][neuron] = b[layer][neuron];
 
@@ -132,6 +128,8 @@ int main() {
 
       // sortie finale ( dernière couche )
       double final_output = layer_output[nb_layers - 1][0];
+      free(layer_inputs);
+      free(layer_output);
 
       // Calcul du taux d'erreur
       total_error += Loss(final_output, yy[i]);
@@ -141,11 +139,11 @@ int main() {
       double **delta = (double **)malloc(nb_layers * sizeof(double *));
       
       // Lister les couches à l'envers
-      for (int layer = nb_layers-1; layer != 0; layer--) {
+      for (int layer = nb_layers-1; layer == 0; layer--) {
         delta[layer] = (double *)malloc(nb_neurons_per_layer[layer] * sizeof(double));
 
         for (int neuron = 0; neuron < nb_neurons_per_layer[layer]; neuron++) {
-          for (int next_neuron; next_neuron < nb_neurons_per_layer[layer]+1; next_neuron++) {
+          for (int next_neuron = 0; next_neuron < nb_neurons_per_layer[layer]+1; next_neuron++) {
             delta[layer][neuron] += delta[layer+1][next_neuron];
           }
           delta[layer][neuron] *= sigmoid_derivative(layer_inputs[layer][neuron]);
@@ -154,7 +152,7 @@ int main() {
 
       for (int layer = 0; layer < nb_layers; layer++) {
         for (int neuron = 0; neuron < nb_neurons_per_layer[layer]; neuron++) {
-          for (int k = 0; k < (layer == 0 ? nb_inputs : nb_neurons_per_layer[layer]); k++) {
+          for (int k = 0; k < (layer == 0 ? nb_inputs : nb_neurons_per_layer[layer-1]); k++) {
             w[layer][neuron][k] -= learning_rate * delta[layer][neuron] * (layer == 0 ? x[i][k] : layer_output[layer-1][k]);
           }
           
