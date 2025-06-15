@@ -74,7 +74,6 @@ def main():
                             layer_inputs[layer][n] += layer_output[layer-1][k] * w[layer][n][k]
 
                     layer_output[layer][n] = sigmoide(layer_inputs[layer][n])
-
             
             final_output = layer_output[nb_layers-1][0]
             
