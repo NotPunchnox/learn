@@ -18,13 +18,13 @@ double Loss(double prediction, double sortie_attendue) {
 }
 
 // Fonction d'activation sigmoïde
-double sigmoid(double y) {
+double sigmoide(double y) {
   return 1.0 / (1.0 + exp(-y));
 }
 
 // Dérivée de la fonction sigmoïde
 double sigmoid_derivative(double y) {
-  double sig = sigmoid(y);
+  double sig = sigmoide(y);
   return sig * (1.0 - sig);
 }
 
@@ -91,7 +91,7 @@ int main() {
   PrintNeuralNetwork(b, w);
 
 
-  // Lister le jeu de données
+  // Propagation avant (feedforward)
   for (int i = 0; i < sizeof(x) / sizeof(x)[0]; i++) {
     double total_error;
 
@@ -111,8 +111,8 @@ int main() {
 
         // Lister les sorties de la couche précédente ou les entrées si on est sur la première couche
         for (int k = 0; k < (layer == 0 ? nb_inputs : nb_neurons_per_layer[layer]); k++) {
+          
           // Rajouter au biais la somme des entrées et des poids
-
           if (layer == 0) {
             layer_inputs[layer][neuron] += x[i][k] * w[layer][neuron][k];
           } else {
@@ -121,10 +121,9 @@ int main() {
 
         }
 
-        layer_output[layer][neuron] = sigmoid(layer_inputs[layer][neuron]);
-
+        // Passer la sortie dans la fonction d'activation (sigmoïde)
+        layer_output[layer][neuron] = sigmoide(layer_inputs[layer][neuron]);
       }
-
     }
 
     // sortie finale ( dernière couche )

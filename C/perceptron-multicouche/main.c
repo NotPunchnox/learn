@@ -12,11 +12,11 @@ double Loss(double prediction, double sortie_attendue) {
 }
 
 // Fonction d'activation sigmoïde
-double sigmoid(double y) { return 1.0 / (1.0 + exp(-y)); }
+double sigmoide(double y) { return 1.0 / (1.0 + exp(-y)); }
 
 // Dérivée de la fonction sigmoïde
 double sigmoid_derivative(double y) {
-  double sig = sigmoid(y);
+  double sig = sigmoide(y);
   return sig * (1.0 - sig);
 }
 
@@ -68,7 +68,7 @@ int main() {
         for (int k = 0; k < nb_inputs; k++) {
           layer_inputs[j] += x[i][k] * w[0][j][k];
         }
-        layer_outputs[j] = sigmoid(layer_inputs[j]);
+        layer_outputs[j] = sigmoide(layer_inputs[j]);
       }
 
       // Couche 2
@@ -77,7 +77,7 @@ int main() {
       for (int j = 0; j < nb_neurons[0]; j++) {
         final_input += layer_outputs[j] * w[1][0][j];
       }
-      final_output = sigmoid(final_input);
+      final_output = sigmoide(final_input);
 
       // Calcul de la perte
       total_error += Loss(final_output, yy[i]);
@@ -132,13 +132,13 @@ int main() {
       layer_inputs[j] = b[0][j];
       for (int k = 0; k < nb_inputs; k++) layer_inputs[j] += x[i][k] * w[0][j][k];
 
-      layer_outputs[j] = sigmoid(layer_inputs[j]);
+      layer_outputs[j] = sigmoide(layer_inputs[j]);
     }
     double final_output = b[1][0];
     for (int j = 0; j < nb_neurons[0]; j++) {
       final_output += layer_outputs[j] * w[1][0][j];
     }
-    final_output = sigmoid(final_output);
+    final_output = sigmoide(final_output);
     printf("Entrée: (%f, %f) => Prédiction: %f, Attendu: %f\n", x[i][0], x[i][1], final_output, yy[i]);
     free(layer_outputs);
     free(layer_inputs);
