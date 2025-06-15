@@ -5,10 +5,10 @@
 
 #define learning_rate 0.1
 #define max_epochs 5000
-#define nb_layers 2
+#define nb_layers 5
 #define nb_inputs 2
 
-const int nb_neurons_per_layer[nb_layers] = {2, 1};
+const int nb_neurons_per_layer[nb_layers] = {30, 15};
 
 // Fonction de calcul de la perte (log-vraisemblance négative)
 double Loss(double prediction, double sortie_attendue) {
@@ -28,7 +28,7 @@ double sigmoid_derivative(double y) {
   return sig * (1.0 - sig);
 }
 
-void PrintNeuralNetwork(double **b, double ***w) {
+void PrintNeuralNetwork(double ***w, double **b) {
   // Afficher les neurons et biais en fonction des couches
   for (int layer = 0; layer < nb_layers; layer++) {
     printf("Layer %d:\n", layer);
@@ -88,7 +88,7 @@ int main() {
   InitWeights(w, b);
 
   // Afficher les poids et biais
-  PrintNeuralNetwork(b, w);
+  PrintNeuralNetwork(w, b);
 
 
   // Propagation avant (feedforward)
