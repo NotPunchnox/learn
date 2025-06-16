@@ -31,7 +31,7 @@ Le dépôt est organisé en plusieurs répertoires :
   - Expérimentations pour comprendre l'architecture des ordinateurs.
   - Utile pour optimiser du code critique dans les systèmes embarqués.
 
-- **math/** : Mathématiques pour l'informatique et le Deep Learning
+- [**math/**](./math/README.md) : Mathématiques pour l'informatique et le Deep Learning
   - Notes et exercices sur les mathématiques niveau licence (algèbre linéaire, calcul, probabilités, optimisation).
   - Accent sur les concepts clés pour le Deep Learning (matrices, gradient) et la robotique (cinématique, contrôle).
 
