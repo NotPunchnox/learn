@@ -1,3 +1,8 @@
+/*
+* Copyright (c)
+* 2025 NotPunchnox
+*/
+
 // Importation de la lib math
 #include <stdio.h>
 #include <math.h>
@@ -76,6 +81,3 @@ int main() {
 
   return 0;
 }
-
-
-// by NotPunchnox
