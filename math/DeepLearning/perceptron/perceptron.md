@@ -7,10 +7,7 @@
 Un perceptron prend des entrées $( x_1, x_2, \dots, x_n $), leur associe des poids $( w_1, w_2, \dots, w_n $), et calcule une sortie. Voici les étapes :
 1. **Somme pondérée** : On calcule ( $z = \sum_{i=1}^{n} w_i x_i + b$ ), où $( b $) est le biais.
 2. **Fonction d'activation** : On applique une fonction, souvent la fonction en échelon :
-   $f(z) = \begin{cases} 
-   1 & \text{si } z \geq 0 \\
-   0 & \text{sinon}
-   \end{cases}$
+   $f(z) = \begin{cases}  1 & \text{si } z \geq 0 \\ 0 & \text{sinon} \end{cases}$
    La sortie est $( y = f(z) $).
 
 ## Illustration
