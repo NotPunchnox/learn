@@ -1,0 +1,1 @@
+gcc -c ./lib/mlp.c -o ./lib/mlp.o && gcc main.c ./lib/mlp.o -o main -lm && ./main
