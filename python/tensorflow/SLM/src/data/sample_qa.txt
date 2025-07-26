@@ -1,0 +1,10 @@
+Quelle est la capitale de la France ?	Paris
+Combien y a-t-il de continents sur Terre ?	Sept
+Qui a écrit Les Misérables ?	Victor Hugo
+Quelle est la couleur du ciel par temps clair ?	Bleu
+Quel est l’animal le plus rapide du monde ?	Guepard
+Combien font 5 multiplié par 6 ?	30
+Quel est le plus grand océan du monde ?	Pacifique
+Qui a peint La Joconde ?	Leonard de Vinci
+Quel est le symbole chimique de l’eau ?	H2O
+En quelle année l’homme a-t-il marché sur la Lune ?	1969
