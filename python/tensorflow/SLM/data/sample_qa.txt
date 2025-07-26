@@ -1,5 +1,3 @@
-Here are the contents for the file /neural-language-model/neural-language-model/data/sample_qa.txt:
-
 # Sample Question-Answer Pairs
 
 What is your name?  
