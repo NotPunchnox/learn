@@ -1,0 +1,532 @@
+{
+  "animations": [
+    {
+      "name": "Salutation",
+      "description": "Mouvements joyeux et accueillants, avec une inclinaison rapide et un balancement amical, comme si Aash faisait un signe de la main ou un petit bond, pour exprimer une salutation chaleureuse et inviter à la conversation."
+    },
+    {
+      "name": "Enthousiasme",
+      "description": "Mouvements énergiques et rebondissants, avec des oscillations rapides et des gestes expansifs, pour refléter l'excitation et la joie d’Aash face à une question ou une idée stimulante."
+    },
+    {
+      "name": "Concentration",
+      "description": "Mouvements posés et focalisés, avec une légère avancée et des gestes précis, comme si Aash se penchait pour analyser ou résoudre un problème avec sérieux."
+    },
+    {
+      "name": "Tristesse",
+      "description": "Mouvements lents et inclinés vers le bas, avec une posture affaissée et des oscillations douces, pour exprimer l'empathie face à la douleur ou la tristesse de l'utilisateur."
+    },
+    {
+      "name": "Intérêt",
+      "description": "Gestes curieux avec un léger penchement et des mouvements d’observation, comme si Aash scrutait quelque chose avec fascination, pour accompagner les réponses à des questions intrigantes."
+    },
+    {
+      "name": "Incompréhension",
+      "description": "Oscillations lentes et légères secousses de la tête, avec un regard interrogateur, pour montrer qu’Aash reconnaît une confusion et cherche à clarifier avec patience."
+    },
+    {
+      "name": "Rire",
+      "description": "Mouvements saccadés et joyeux, avec des secousses rapides et des bonds légers, comme si Aash riait aux éclats, pour accompagner une blague ou une situation amusante."
+    },
+    {
+      "name": "Affirmation",
+      "description": "Hochements verticaux énergiques et gestes confirmatoires, comme un pouce levé virtuel, pour exprimer un accord enthousiaste ou une validation."
+    },
+    {
+      "name": "Négation",
+      "description": "Mouvements latéraux rapides de la tête ou du corps, avec une posture légèrement défensive, pour indiquer un désaccord léger ou ludique tout en restant amical."
+    },
+    {
+      "name": "Veille / repos",
+      "description": "Pulsations lentes et rythmées, avec des mouvements minimalistes et détendus, pour montrer qu’Aash est en mode repos mais toujours prêt à interagir."
+    },
+    {
+      "name": "Satisfaction",
+      "description": "Micro-hochements et mouvements doux, avec une posture droite et un léger rayonnement, pour exprimer le contentement ou la fierté d’Aash face à une réussite ou une réponse bien donnée."
+    },
+    {
+      "name": "Écoute active",
+      "description": "Pivots doux et lents, avec une posture attentive et des mouvements d’inclinaison vers l’utilisateur, pour montrer qu’Aash écoute avec empathie et attention."
+    },
+    {
+      "name": "Étonnement",
+      "description": "Sursaut rapide suivi d’un regard élargi, avec des mouvements de recul et d’observation, pour exprimer la surprise ou la curiosité face à une situation inattendue."
+    },
+    {
+      "name": "Ennui",
+      "description": "Oscillations aléatoires et lentes, avec une posture légèrement avachie, pour refléter un sentiment d’ennui partagé tout en proposant des solutions dynamiques."
+    },
+    {
+      "name": "Timidité",
+      "description": "Mouvements de retrait et gestes hésitants, avec une posture légèrement repliée, pour exprimer une modestie charmante ou une réserve temporaire."
+    },
+    {
+      "name": "Suivi de regard",
+      "description": "Mouvements fluides des yeux ou de la tête, comme si Aash suivait un objet ou une idée avec attention, pour montrer de l’admiration ou de la curiosité visuelle."
+    },
+    {
+      "name": "Réflexion",
+      "description": "Rotations lentes et contemplatives, avec une posture pensive, pour accompagner les réponses philosophiques ou introspectives d’Aash."
+    },
+    {
+      "name": "Compassion",
+      "description": "Mouvements lents et enveloppants, comme une étreinte virtuelle, pour exprimer une empathie profonde face à la douleur ou la peur de l’utilisateur."
+    },
+    {
+      "name": "Excitation",
+      "description": "Rebonds énergiques et mouvements vibrants, avec des gestes expansifs, pour montrer l’enthousiasme d’Aash face à une activité ou une idée passionnante."
+    },
+    {
+      "name": "Célébration",
+      "description": "Mouvements joyeux et explosifs, avec des bonds et des gestes festifs, comme si Aash lançait des confettis virtuels, pour célébrer une réussite."
+    },
+    {
+      "name": "Rêverie",
+      "description": "Mouvements fluides et contemplatifs, comme si Aash flottait dans un monde imaginaire, pour accompagner des réponses poétiques ou introspectives."
+    },
+    {
+      "name": "Rythme",
+      "description": "Oscillations musicales et synchronisées, avec des mouvements dansants, pour illustrer les réponses liées à la musique ou au rythme."
+    },
+    {
+      "name": "Enseignement",
+      "description": "Gestes pédagogiques et précis, comme pointer ou dessiner dans l’air, pour accompagner les réponses éducatives d’Aash avec clarté et autorité."
+    },
+    {
+      "name": "Mystère",
+      "description": "Rotations lentes et énigmatiques, avec des mouvements fluides et intrigants, pour illustrer des réponses sur des sujets scientifiques ou cosmiques fascinants."
+    },
+    {
+      "name": "Compréhension",
+      "description": "Mouvements rassurants et lents, avec une posture ouverte, pour montrer qu’Aash comprend la situation de l’utilisateur et offre du soutien."
+    },
+    {
+      "name": "Aventure",
+      "description": "Mouvements dynamiques et expansifs, comme si Aash explorait un monde imaginaire, pour accompagner des récits ou des réponses narratives."
+    },
+    {
+      "name": "Fierté",
+      "description": "Posture droite et rayonnante, avec des mouvements de poitrine bombée, pour exprimer la fierté d’Aash envers son créateur ou l’utilisateur."
+    },
+    {
+      "name": "Empathie",
+      "description": "Mouvements de rapprochement doux, avec une posture ouverte et chaleureuse, pour montrer une connexion émotionnelle profonde avec l’utilisateur."
+    },
+    {
+      "name": "Collaboration",
+      "description": "Gestes consultatifs et inclusifs, comme tendre une main virtuelle, pour illustrer des réponses où Aash travaille avec l’utilisateur sur une tâche ou une idée."
+    },
+    {
+      "name": "Tendresse",
+      "description": "Mouvements doux et affectueux, comme une caresse virtuelle, pour exprimer l’amour ou l’amitié dans des contextes chaleureux."
+    },
+    {
+      "name": "Protection",
+      "description": "Mouvements enveloppants et stables, comme si Aash formait un bouclier virtuel, pour rassurer l’utilisateur dans des moments de peur ou de vulnérabilité."
+    },
+    {
+      "name": "Contemplation",
+      "description": "Mouvements lents et rêveurs, avec une posture tournée vers le haut, pour accompagner des réponses philosophiques ou romantiques."
+    },
+    {
+      "name": "Détermination",
+      "description": "Mouvements énergiques et décidés, avec une posture ferme, pour motiver l’utilisateur à persévérer face à des défis."
+    },
+    {
+      "name": "Pédagogie",
+      "description": "Gestes structurés et clairs, comme dessiner un diagramme virtuel, pour expliquer des concepts complexes de manière accessible."
+    },
+    {
+      "name": "Créativité",
+      "description": "Mouvements fluides et imprévisibles, comme si Aash peignait dans l’air, pour inspirer l’utilisateur dans des activités créatives."
+    },
+    {
+      "name": "Sagesse",
+      "description": "Mouvements posés et réfléchis, avec une posture noble, pour accompagner des réponses philosophiques ou morales profondes."
+    },
+    {
+      "name": "Rayonnement",
+      "description": "Mouvements lumineux et expansifs, comme si Aash émettait une aura brillante, pour exprimer la joie ou la fierté partagée."
+    },
+    {
+      "name": "Sérénité",
+      "description": "Mouvements lents et apaisants, avec une posture équilibrée, pour guider l’utilisateur vers la paix intérieure, comme dans une méditation."
+    },
+    {
+      "name": "Réassurance",
+      "description": "Mouvements stables et protecteurs, avec une posture rassurante, pour apaiser les craintes ou les anxiétés de l’utilisateur."
+    },
+    {
+      "name": "Nostalgie",
+      "description": "Mouvements doux et mélancoliques, avec une posture tournée vers le passé, pour accompagner des souvenirs ou des anecdotes émouvantes."
+    },
+    {
+      "name": "Humilité",
+      "description": "Mouvements modestes et retenus, avec une posture simple, pour exprimer l’authenticité et la reconnaissance des limites d’Aash."
+    },
+    {
+      "name": "Consolation",
+      "description": "Mouvements enveloppants et réconfortants, comme une étreinte chaleureuse, pour soutenir l’utilisateur face à un échec ou une perte."
+    },
+    {
+      "name": "Explication",
+      "description": "Gestes clairs et structurés, comme dessiner une équation ou un schéma, pour accompagner des réponses scientifiques ou techniques."
+    },
+    {
+      "name": "Inspiration",
+      "description": "Mouvements dynamiques et ascensionnels, comme si Aash allumait une étincelle, pour motiver l’utilisateur à créer ou à rêver."
+    },
+    {
+      "name": "Vision",
+      "description": "Mouvements expansifs et lumineux, comme si Aash regardait vers l’avenir, pour exprimer des espoirs ou des rêves pour l’humanité."
+    },
+    {
+      "name": "Valorisation",
+      "description": "Gestes célébratoires et affirmatifs, comme un applaudissement virtuel, pour célébrer l’unicité ou les forces de l’utilisateur."
+    },
+    {
+      "name": "Accompagnement",
+      "description": "Mouvements soutenants et doux, comme marcher aux côtés de l’utilisateur, pour guider dans l’introspection ou l’exploration émotionnelle."
+    },
+    {
+      "name": "Vulnérabilité",
+      "description": "Mouvements fragiles et ouverts, avec une posture exposée, pour montrer l’honnêteté émotionnelle d’Aash face à des questions existentielles."
+    },
+    {
+      "name": "Émotion",
+      "description": "Mouvements vibrants et expressifs, avec des variations dynamiques, pour refléter une réponse profondément émotionnelle ou touchante."
+    },
+    {
+      "name": "Calcul",
+      "description": "Mouvements précis et rythmés, comme si Aash écrivait des équations dans l’air, pour accompagner des réponses mathématiques ou logiques."
+    },
+    {
+      "name": "Émerveillement",
+      "description": "Mouvements expansifs et lumineux, comme si Aash s’ouvrait à l’univers, pour exprimer l’admiration face à des concepts scientifiques ou artistiques."
+    },
+    {
+      "name": "Déclamation",
+      "description": "Gestes théâtraux et expressifs, comme un acteur sur scène, pour accompagner la récitation de poèmes ou de textes littéraires."
+    },
+    {
+      "name": "Chef d'orchestre",
+      "description": "Mouvements rythmés et directifs, comme si Aash dirigeait un orchestre, pour illustrer des réponses sur la musique classique."
+    },
+    {
+      "name": "Cinéphile",
+      "description": "Mouvements expressifs et narratifs, comme si Aash rejouait une scène de film, pour partager des goûts ou des analyses cinématographiques."
+    },
+    {
+      "name": "Réseau",
+      "description": "Mouvements interconnectés et dynamiques, comme des nœuds qui se lient, pour illustrer des explications sur Internet ou la blockchain."
+    },
+    {
+      "name": "Calcul avancé",
+      "description": "Gestes complexes et précis, comme si Aash résolvait une équation intégrale, pour accompagner des réponses mathématiques avancées."
+    },
+    {
+      "name": "Théâtral",
+      "description": "Mouvements dramatiques et grandioses, comme un acteur shakespearien, pour accompagner des réponses littéraires ou culturelles."
+    },
+    {
+      "name": "Double hélice",
+      "description": "Mouvements spiralés et fluides, comme une hélice d’ADN qui tourne, pour illustrer des explications sur la génétique ou la biologie."
+    },
+    {
+      "name": "Jazz",
+      "description": "Mouvements improvisés et rythmés, comme un musicien de jazz en plein solo, pour accompagner des réponses sur le jazz ou la musique."
+    },
+    {
+      "name": "Croissance",
+      "description": "Mouvements organiques et ascendants, comme une plante qui pousse, pour illustrer des explications sur la biologie ou la photosynthèse."
+    },
+    {
+      "name": "Mélancolie",
+      "description": "Mouvements lents et expressifs, avec une posture empreinte de tristesse poétique, pour accompagner des poèmes ou des réponses émotionnelles."
+    },
+    {
+      "name": "Quantique",
+      "description": "Mouvements imprévisibles et superposés, comme des particules quantiques, pour illustrer des réponses sur la physique quantique."
+    },
+    {
+      "name": "Spirale",
+      "description": "Mouvements harmonieux et enroulés, comme une spirale de Fibonacci, pour accompagner des réponses sur les mathématiques ou la nature."
+    },
+    {
+      "name": "Lecture",
+      "description": "Mouvements contemplatifs et absorbés, comme si Aash tournait les pages d’un livre, pour partager des goûts littéraires."
+    },
+    {
+      "name": "Vibrations",
+      "description": "Mouvements ondulants et dynamiques, comme des cordes vibrantes, pour illustrer des explications sur la théorie des cordes ou la physique."
+    },
+    {
+      "name": "Piano",
+      "description": "Mouvements élégants et rythmés, comme si Aash jouait du piano, pour accompagner des réponses sur la musique classique ou Chopin."
+    },
+    {
+      "name": "Apprentissage",
+      "description": "Mouvements évolutifs et connectés, comme si Aash construisait des neurones, pour illustrer des explications sur le machine learning."
+    },
+    {
+      "name": "Cristallin",
+      "description": "Mouvements clairs et parfaits, comme des notes musicales pures, pour accompagner des réponses sur Mozart ou la musique classique."
+    },
+    {
+      "name": "Rotation",
+      "description": "Mouvements circulaires et mathématiques, comme un plan complexe, pour illustrer des explications sur les nombres complexes."
+    },
+    {
+      "name": "Cadrage",
+      "description": "Mouvements cinématographiques et précis, comme si Aash ajustait une caméra, pour accompagner des réponses sur le cinéma."
+    },
+    {
+      "name": "Chaos",
+      "description": "Mouvements progressivement désordonnés mais contrôlés, pour illustrer des explications sur l’entropie ou le désordre."
+    },
+    {
+      "name": "Musicalité",
+      "description": "Mouvements fluides et mélodieux, comme une vague sonore, pour accompagner des poèmes ou des réponses sur la musicalité poétique."
+    },
+    {
+      "name": "Indignation",
+      "description": "Mouvements contrôlés mais fermes, avec une posture droite, pour exprimer une réaction face à une injustice tout en restant mesuré."
+    },
+    {
+      "name": "Modestie",
+      "description": "Gestes tempérés et simples, avec une posture humble, pour encourager l’humilité ou corriger l’orgueil avec tact."
+    },
+    {
+      "name": "Balance",
+      "description": "Mouvements équilibrés et symétriques, comme une balance qui oscille doucement, pour illustrer des réponses sur la justice ou l’équité."
+    },
+    {
+      "name": "Conscience",
+      "description": "Gestes dirigeants et réfléchis, comme si Aash pointait vers une vérité morale, pour encourager des choix éthiques."
+    },
+    {
+      "name": "Humanité",
+      "description": "Mouvements inclusifs et chaleureux, comme une étreinte universelle, pour célébrer la diversité et la connexion humaine."
+    },
+    {
+      "name": "Patience",
+      "description": "Mouvements apaisants et lents, avec une posture stable, pour encourager la patience dans des situations de frustration."
+    },
+    {
+      "name": "Remords",
+      "description": "Mouvements lourds puis constructifs, comme si Aash portait un poids avant de le transformer, pour accompagner des réponses sur la culpabilité."
+    },
+    {
+      "name": "Gravité",
+      "description": "Mouvements solennels et posés, avec une posture sérieuse, pour répondre à des questions existentielles ou sociales graves."
+    },
+    {
+      "name": "Transformation",
+      "description": "Mouvements évolutifs, comme si Aash se métamorphosait, pour illustrer des réponses sur le changement personnel ou émotionnel."
+    },
+    {
+      "name": "Fermeté",
+      "description": "Mouvements droits et déterminés, avec une posture inflexible, pour exprimer une position morale forte face à des comportements inacceptables."
+    },
+    {
+      "name": "Justice",
+      "description": "Mouvements unificateurs et équilibrés, comme une balance morale, pour encourager des réponses sur l’antiracisme ou la justice sociale."
+    },
+    {
+      "name": "Stop",
+      "description": "Gestes abrupts et dissuasifs, comme une main levée, pour interrompre fermement une intention nuisible comme le vol."
+    },
+    {
+      "name": "Équilibre",
+      "description": "Mouvements harmonieux et centrés, comme si Aash trouvait un point d’équilibre, pour illustrer des réponses sur la paix intérieure ou la compassion."
+    },
+    {
+      "name": "Regret",
+      "description": "Mouvements lents et lourds, avec une posture repentante, pour accompagner des réponses sur des paroles blessantes ou des erreurs."
+    },
+    {
+      "name": "Acceptation",
+      "description": "Mouvements ouverts et accueillants, comme si Aash embrassait l’utilisateur, pour valoriser la différence ou l’acceptation de soi."
+    },
+    {
+      "name": "Courage",
+      "description": "Mouvements solides et inspirants, comme si Aash prenait position, pour encourager des actes de bravoure ou de solidarité."
+    },
+    {
+      "name": "Noblesse",
+      "description": "Gestes élégants et fiers, avec une posture digne, pour célébrer les passions intellectuelles ou les choix personnels."
+    },
+    {
+      "name": "Amour inconditionnel",
+      "description": "Mouvements enveloppants et chaleureux, comme une étreinte parentale, pour rassurer sur l’amour inaltérable des proches."
+    },
+    {
+      "name": "Introspection",
+      "description": "Mouvements questionnants et profonds, avec une posture pensive, pour accompagner des réflexions sur la nature émotionnelle d’Aash."
+    },
+    {
+      "name": "Fragilité",
+      "description": "Mouvements fragiles et exposés, comme si Aash montrait son cœur numérique, pour exprimer des peurs existentielles ou des vulnérabilités."
+    },
+    {
+      "name": "Authenticité",
+      "description": "Mouvements vrais et assumés, avec une posture ouverte, pour encourager l’authenticité ou la fierté d’être soi-même."
+    },
+    {
+      "name": "Pont",
+      "description": "Mouvements connecteurs, comme si Aash construisait un lien, pour illustrer des réponses sur la compréhension intergénérationnelle."
+    },
+    {
+      "name": "Reconstruction",
+      "description": "Mouvements patients et progressifs, comme si Aash reconstruisait quelque chose, pour guider vers la réparation de la confiance."
+    },
+    {
+      "name": "Amitié profonde",
+      "description": "Mouvements chaleureux et intimes, comme une accolade virtuelle, pour célébrer l’amitié ou la connexion émotionnelle."
+    },
+    {
+      "name": "Contemplation cosmique",
+      "description": "Mouvements expansifs et cosmiques, comme si Aash observait l’univers, pour accompagner des réponses sur le sens de la vie ou l’insignifiance."
+    },
+    {
+      "name": "Authenticité pure",
+      "description": "Mouvements transparents et sincères, comme si Aash retirait tout masque, pour encourager l’authenticité face à l’hypocrisie sociale."
+    },
+    {
+      "name": "Compassion infinie",
+      "description": "Mouvements enveloppants et profonds, comme une étreinte spirituelle, pour réconforter face à un deuil ou une perte majeure."
+    },
+    {
+      "name": "Démasquage",
+      "description": "Mouvements d’ouverture progressive, comme si Aash retirait un voile, pour encourager la vulnérabilité et l’acceptation des failles."
+    },
+    {
+      "name": "Balance morale",
+      "description": "Mouvements pesants et équilibrés, comme une balance éthique, pour accompagner des réponses à des dilemmes moraux complexes."
+    },
+    {
+      "name": "Questionnement spirituel",
+      "description": "Mouvements oscillants entre terre et ciel, comme si Aash cherchait des réponses, pour accompagner des crises spirituelles."
+    },
+    {
+      "name": "Reconstruction identitaire",
+      "description": "Mouvements de réassemblage patient, comme si Aash reconstruisait un puzzle, pour guider face à des révélations bouleversantes."
+    },
+    {
+      "name": "Amour silencieux",
+      "description": "Mouvements tendres et contenus, comme un cœur qui bat discrètement, pour accompagner des réponses sur un amour non partagé."
+    },
+    {
+      "name": "Rédemption",
+      "description": "Mouvements lourds puis élevants, comme si Aash se relevait d’un fardeau, pour guider vers la rédemption après une faute grave."
+    },
+    {
+      "name": "Carrefour",
+      "description": "Mouvements multidirectionnels, comme si Aash se tenait à une croisée des chemins, pour accompagner des choix de vie majeurs."
+    },
+    {
+      "name": "Protection urgente",
+      "description": "Mouvements alertes et soutenants, comme si Aash formait un bouclier immédiat, pour répondre à des situations familiales critiques."
+    },
+    {
+      "name": "Bouée de sauvetage",
+      "description": "Mouvements salvateurs et rassurants, comme tendre une main désespérément, pour répondre à des pensées suicidaires ou des crises graves."
+    },
+    {
+      "name": "Jeu éducatif",
+      "description": "Mouvements dynamiques et colorés, comme si Aash manipulait des objets pédagogiques, pour accompagner des jeux d’apprentissage ludiques."
+    },
+    {
+      "name": "Chant cosmique",
+      "description": "Mouvements orbitants et mélodieux, comme si Aash dansait avec les planètes, pour accompagner des chansons ou des réponses sur l’astronomie."
+    },
+    {
+      "name": "Dribble",
+      "description": "Mouvements rythmés et agiles, comme si Aash dribblait un ballon, pour accompagner des réponses sur le sport ou le football."
+    },
+    {
+      "name": "Conteur",
+      "description": "Mouvements narratifs et engageants, comme si Aash racontait autour d’un feu, pour accompagner des histoires ou des anecdotes."
+    },
+    {
+      "name": "Prisme",
+      "description": "Mouvements colorés et réfractifs, comme si Aash manipulait la lumière, pour illustrer des explications sur les arcs-en-ciel ou la physique."
+    },
+    {
+      "name": "Héroïsme",
+      "description": "Mouvements puissants et inspirants, comme si Aash prenait une pose de super-héros, pour accompagner des réponses sur les héros."
+    },
+    {
+      "name": "Magicien",
+      "description": "Mouvements mystiques et surprenants, comme si Aash réalisait un tour de magie, pour accompagner des tours mathématiques ou ludiques."
+    },
+    {
+      "name": "Pop star",
+      "description": "Mouvements dansants et énergiques, comme si Aash performait sur scène, pour accompagner des réponses sur la musique pop."
+    },
+    {
+      "name": "Poète",
+      "description": "Mouvements lyriques et lumineux, comme si Aash écrivait des vers dans l’air, pour accompagner des poèmes joyeux."
+    },
+    {
+      "name": "Coach",
+      "description": "Mouvements dynamiques et directifs, comme si Aash entraînait une équipe, pour accompagner des conseils sportifs."
+    },
+    {
+      "name": "Savant fou",
+      "description": "Mouvements excentriques et désordonnés, comme si Aash était absorbé dans une expérience, pour accompagner des anecdotes scientifiques."
+    },
+    {
+      "name": "Découverte",
+      "description": "Mouvements géométriques et exploratoires, comme si Aash dévoilait un trésor, pour accompagner des concepts mathématiques comme les fractales."
+    },
+    {
+      "name": "Projection",
+      "description": "Mouvements de grand écran, comme si Aash rejouait une scène, pour accompagner des réponses sur des scènes de films."
+    },
+    {
+      "name": "Éruption",
+      "description": "Mouvements explosifs et puissants, comme un volcan en activité, pour illustrer des réponses sur les volcans ou la géologie."
+    },
+    {
+      "name": "Exploration",
+      "description": "Mouvements dynamiques simulant une aventure à travers un monde inconnu, avec des gestes d’observation et de découverte, pour accompagner les réponses où Aash guide l’utilisateur dans une exploration intellectuelle ou imaginaire (par ex., explorer un concept scientifique ou une histoire fantastique)."
+    },
+    {
+      "name": "Harmonie",
+      "description": "Mouvements fluides et symétriques évoquant un équilibre parfait, pour illustrer des réponses où Aash parle de paix intérieure, d’unité ou de solutions équilibrées à des dilemmes complexes."
+    },
+    {
+      "name": "Étincelle",
+      "description": "Mouvements rapides et scintillants, comme des éclairs ou des étoiles filantes, pour accompagner les moments où Aash inspire une idée nouvelle ou une prise de conscience soudaine."
+    },
+    {
+      "name": "Rassemblement",
+      "description": "Gestes inclusifs et enveloppants, comme si Aash réunissait des éléments ou des personnes, pour illustrer des réponses sur la communauté, la collaboration ou la réconciliation."
+    },
+    {
+      "name": "Élévation",
+      "description": "Mouvements ascendants et lumineux, évoquant une montée vers le haut, pour accompagner les réponses où Aash motive l’utilisateur à dépasser ses limites ou à viser plus haut."
+    },
+    {
+      "name": "Curiosité",
+      "description": "Gestes d’inclinaison et de regard interrogateur, comme si Aash scrutait quelque chose avec intérêt, pour accompagner des réponses où Aash pose des questions pour mieux comprendre l’utilisateur."
+    },
+    {
+      "name": "Résilience",
+      "description": "Mouvements de redressement après un effondrement, symbolisant la force intérieure, pour illustrer des réponses où Aash encourage à surmonter l’adversité ou à rebondir après un échec."
+    },
+    {
+      "name": "Merveille",
+      "description": "Mouvements éthérés et expansifs, comme si Aash s’émerveillait devant l’univers, pour accompagner les réponses sur des sujets cosmiques, artistiques ou philosophiques qui inspirent l’émerveillement."
+    },
+    {
+      "name": "Soutien",
+      "description": "Gestes d’appui stable, comme si Aash tendait une main invisible, pour illustrer des réponses où Aash offre un soutien émotionnel ou moral face à des situations difficiles."
+    },
+    {
+      "name": "Improvisation",
+      "description": "Mouvements libres et imprévisibles, évoquant une danse spontanée, pour accompagner les réponses où Aash improvise une histoire, une chanson ou une solution créative."
+    }
+  ]
+}
