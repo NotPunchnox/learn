@@ -124,22 +124,24 @@ double* mlp_feed_forward(MLP* nn, const int* input, double** layer_inputs, doubl
 void mlp_train(MLP* nn, const int (*inputs)[2], const int* targets, int nb_samples, double learning_rate, int max_epochs) {
     int nb_threads = omp_get_max_threads();
 
-    // Allocation mémoire pour la propagation
-    double** layer_inputs = (double**)malloc(nn->nb_layers * sizeof(double*));
-    double** layer_output = (double**)malloc(nn->nb_layers * sizeof(double*));
-    for (int layer = 0; layer < nn->nb_layers; layer++) {
-        layer_inputs[layer] = (double*)malloc(nn->nb_neurons_per_layer[layer] * sizeof(double));
-        layer_output[layer] = (double*)malloc(nn->nb_neurons_per_layer[layer] * sizeof(double));
+    // Allocation unique pour la propagation
+    double*** thread_layer_inputs = malloc(nb_threads * sizeof(double**));
+    double*** thread_layer_output = malloc(nb_threads * sizeof(double**));
+    for (int t = 0; t < nb_threads; t++) {
+        thread_layer_inputs[t] = malloc(nn->nb_layers * sizeof(double*));
+        thread_layer_output[t] = malloc(nn->nb_layers * sizeof(double*));
+        for (int layer = 0; layer < nn->nb_layers; layer++) {
+            thread_layer_inputs[t][layer] = malloc(nn->nb_neurons_per_layer[layer] * sizeof(double));
+            thread_layer_output[t][layer] = malloc(nn->nb_neurons_per_layer[layer] * sizeof(double));
+        }
     }
 
-    // Boucle d'entrainement
     for (int epoch = 0; epoch < max_epochs; epoch++) {
         double total_error = 0.0;
 
-        // Allocation pour les gradients par thread
+        // Allocation des gradients par thread
         double**** grad_weights = malloc(nb_threads * sizeof(double***));
         double*** grad_biases = malloc(nb_threads * sizeof(double**));
-
         for (int t = 0; t < nb_threads; t++) {
             grad_weights[t] = malloc(nn->nb_layers * sizeof(double**));
             grad_biases[t] = malloc(nn->nb_layers * sizeof(double*));
@@ -157,56 +159,47 @@ void mlp_train(MLP* nn, const int (*inputs)[2], const int* targets, int nb_sampl
         #pragma omp parallel for reduction(+:total_error)
         for (int i = 0; i < nb_samples; i++) {
             int tid = omp_get_thread_num();
+            double* final_output = mlp_feed_forward(nn, inputs[i], thread_layer_inputs[tid], thread_layer_output[tid]);
 
-            // Propagation avant
-            double* final_output = mlp_feed_forward(nn, inputs[i], layer_inputs, layer_output);
-
-            // Calcul erreur
+            // Calcul de l'erreur
             for (int o = 0; o < nn->nb_outputs; o++)
                 total_error += Loss(final_output[o], targets[i * nn->nb_outputs + o]);
 
             // Rétropropagation
-            double** delta = (double**)malloc(nn->nb_layers * sizeof(double*));
-            for (int layer = 0; layer < nn->nb_layers; layer++) {
-                delta[layer] = (double*)calloc(nn->nb_neurons_per_layer[layer], sizeof(double));
-            }
+            double** delta = malloc(nn->nb_layers * sizeof(double*));
+            for (int layer = 0; layer < nn->nb_layers; layer++)
+                delta[layer] = calloc(nn->nb_neurons_per_layer[layer], sizeof(double));
 
-            // Delta pour la couche de sortie
-            for (int o = 0; o < nn->nb_outputs; o++) {
+            for (int o = 0; o < nn->nb_outputs; o++)
                 delta[nn->nb_layers - 1][o] =
                     (final_output[o] - targets[i * nn->nb_outputs + o]) *
-                    sigmoid_derivative(layer_inputs[nn->nb_layers - 1][o]);
-            }
+                    sigmoid_derivative(thread_layer_inputs[tid][nn->nb_layers - 1][o]);
 
-            // Delta pour les couches cachées
             for (int layer = nn->nb_layers - 2; layer >= 0; layer--) {
                 for (int neuron = 0; neuron < nn->nb_neurons_per_layer[layer]; neuron++) {
-                    for (int next_neuron = 0; next_neuron < nn->nb_neurons_per_layer[layer + 1]; next_neuron++) {
+                    for (int next_neuron = 0; next_neuron < nn->nb_neurons_per_layer[layer + 1]; next_neuron++)
                         delta[layer][neuron] += delta[layer + 1][next_neuron] * nn->weights[layer + 1][next_neuron][neuron];
-                    }
-                    delta[layer][neuron] *= sigmoid_derivative(layer_inputs[layer][neuron]);
+                    delta[layer][neuron] *= sigmoid_derivative(thread_layer_inputs[tid][layer][neuron]);
                 }
             }
 
-            // Accumulation des gradients dans grad_weights / grad_biases
+            // Accumulation des gradients
             for (int layer = 0; layer < nn->nb_layers; layer++) {
                 for (int neuron = 0; neuron < nn->nb_neurons_per_layer[layer]; neuron++) {
                     int nb_prev = (layer == 0 ? nn->nb_inputs : nn->nb_neurons_per_layer[layer - 1]);
-                    for (int k = 0; k < nb_prev; k++) {
+                    for (int k = 0; k < nb_prev; k++)
                         grad_weights[tid][layer][neuron][k] += delta[layer][neuron] *
-                                                              (layer == 0 ? inputs[i][k] : layer_output[layer - 1][k]);
-                    }
+                                                             (layer == 0 ? inputs[i][k] : thread_layer_output[tid][layer-1][k]);
                     grad_biases[tid][layer][neuron] += delta[layer][neuron];
                 }
             }
 
-            // Libération
             free(final_output);
             for (int layer = 0; layer < nn->nb_layers; layer++) free(delta[layer]);
             free(delta);
         }
 
-        // Mise à jour globale des poids et biais
+        // Mise à jour globale
         for (int layer = 0; layer < nn->nb_layers; layer++) {
             for (int neuron = 0; neuron < nn->nb_neurons_per_layer[layer]; neuron++) {
                 int nb_prev = (layer == 0 ? nn->nb_inputs : nn->nb_neurons_per_layer[layer - 1]);
@@ -214,7 +207,7 @@ void mlp_train(MLP* nn, const int (*inputs)[2], const int* targets, int nb_sampl
                     double sum = 0.0;
                     for (int t = 0; t < nb_threads; t++) sum += grad_weights[t][layer][neuron][k];
                     nn->weights[layer][neuron][k] -= learning_rate * sum / nb_samples;
-                    free(grad_weights[0][layer][neuron]); // Libération d'un thread (tous identiques en taille)
+                    for (int t = 0; t < nb_threads; t++) free(grad_weights[t][layer][neuron]);
                 }
                 double sum_bias = 0.0;
                 for (int t = 0; t < nb_threads; t++) sum_bias += grad_biases[t][layer][neuron];
@@ -225,18 +218,24 @@ void mlp_train(MLP* nn, const int (*inputs)[2], const int* targets, int nb_sampl
                 free(grad_biases[t][layer]);
             }
         }
-        for (int t = 0; t < nb_threads; t++) free(grad_weights[t]);
-        for (int t = 0; t < nb_threads; t++) free(grad_biases[t]);
+        for (int t = 0; t < nb_threads; t++) {
+            free(grad_weights[t]);
+            free(grad_biases[t]);
+        }
         free(grad_weights);
         free(grad_biases);
 
         printf("Epoch %d, Erreur moyenne: %f\n", epoch, total_error / (nb_samples * nn->nb_outputs));
     }
 
-    for (int layer = 0; layer < nn->nb_layers; layer++) {
-        free(layer_inputs[layer]);
-        free(layer_output[layer]);
+    for (int t = 0; t < nb_threads; t++) {
+        for (int layer = 0; layer < nn->nb_layers; layer++) {
+            free(thread_layer_inputs[t][layer]);
+            free(thread_layer_output[t][layer]);
+        }
+        free(thread_layer_inputs[t]);
+        free(thread_layer_output[t]);
     }
-    free(layer_inputs);
-    free(layer_output);
+    free(thread_layer_inputs);
+    free(thread_layer_output);
 }
