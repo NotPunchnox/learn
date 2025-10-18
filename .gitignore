@@ -3,3 +3,6 @@ C/DeepNeuralNetwork/mnist_train.csv
 
 
 *.exe
+
+Rust/*/target
+Rust/*/Cargo.lock
