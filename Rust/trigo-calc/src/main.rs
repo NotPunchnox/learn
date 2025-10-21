@@ -15,11 +15,15 @@ fn calcul (x : f64, y: f64, z: f64) {
     let theta1 = y.atan2(x);
     let theta2 = (tpatte - coxa).atan2(z);
     let theta3_theta4 = ((femur*femur + h*h - tibia*tibia) / (2.0 * femur * h)).acos();
-    let theta7 = (180.0_f64.to_radians() - (theta3_theta4 + theta2));
+
+    // Séparer theta3 et theta4 en soustrayant theta2 et theta3-4 de 180 pour obtenir theta7
+    // Obtenir theta4 en retirant theta7 de 90 degrés
+    let theta7 = 180.0_f64.to_radians() - (theta3_theta4 + theta2);
     let theta4 = 90.0_f64.to_radians() - theta7;
     let theta3 = theta3_theta4 - theta4;
     let theta5 = ((femur*femur + tibia*tibia - h*h) / (2.0 * femur * tibia)).acos();
 
+    // Afficher les angles calculés
     println!("Angles calculés (en degrés) :");
     println!("Theta 1 (Coxa)  : {:.2}°", theta1.to_degrees());
     println!("Theta 2 (Coxa)  : {:.2}°", theta2.to_degrees());
@@ -29,7 +33,7 @@ fn calcul (x : f64, y: f64, z: f64) {
 
     // Calcul des longueurs des vecteurs ( vue du ciel ) (c', f', t')
     let c_prime = coxa;
-    let f_prime = f * theta4.to_radians().cos();
+    let f_prime = femur * theta4.to_radians().cos();
     let t_prime = x - (c_prime + f_prime);
 
     println!("\nLongueurs des projections des segments de la patte (vue du ciel) :");
