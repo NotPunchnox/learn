@@ -1,0 +1,39 @@
+fn calcul (x : f64, y: f64, z: f64) {
+
+    let coxa: f64 = 5.0;
+    let femur: f64 = 6.3;
+    let tibia: f64 = 13.0;
+
+    let tpatte = (x*x + y*y).sqrt();
+
+    println!("Coordonnées de la cible : X: {:.2} cm | Y: {:.2} cm | Z: {:.2} cm", x, y, z);
+    println!("Longueurs des segments de la patte : Coxa: {:.2} cm | Fémur: {:.2} cm | Tibia: {:.2} cm", coxa, femur, tibia);
+    println!("Taille de la patte (projection vu de haut) : {:.2} cm\n", tpatte);
+
+    let h = (z*z + (x-coxa) * (x-coxa)).sqrt();
+
+    let theta1 = y.atan2(x);
+    let theta2 = (tpatte - coxa).atan2(z);
+    let theta3_theta4 = ((femur*femur + h*h - tibia*tibia) / (2.0 * femur * h)).acos();
+    let theta7 = (180-((theta3_theta4 + theta2).to_degrees())).to_radians();
+    let theta4 = (90 - theta7.to_degrees());
+    let theta3 = (theta3_theta4.to_degrees() - theta4.to_degrees()).to_radians();
+    let theta5 = ( (femur*femur + tibia*tibia - h*h) / (2.0 * femur * tibia) ).acos();
+
+    println!("Angles calculés (en degrés) :");
+    println!("Theta 1 (Coxa)  : {:.2}°", theta1.to_degrees());
+    println!("Theta 2 (Coxa)  : {:.2}°", theta2.to_degrees());
+    println!("Theta 3 (Fémur) : {:.2}°", theta3.to_degrees());
+    println!("Theta 4 (Fémur) : {:.2}°", theta4.to_degrees());
+    println!("Theta 5 (Tibia) : {:.2}°", theta5.to_degrees());
+}
+
+fn main() {
+    println!("=== Programme de calcul -> trygonométrie ===");
+
+    let x = 12.0;
+    let y = 5.0;
+    let z = 8.0;
+
+    calcul(x, y, z);
+}
