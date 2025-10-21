@@ -1,6 +1,6 @@
 use plotters::prelude::*;
 
-fn visualize_leg(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, theta1: f64, theta2: f64, theta4: f64) -> Result<(), Box<dyn std::error::Error>> {
+pub fn visualize_leg(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, theta1: f64, theta2: f64, theta4: f64) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("leg_visualization.png", (800, 600)).into_drawing_area();
     root.fill(&WHITE)?;
     
@@ -47,7 +47,7 @@ fn visualize_leg(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, thet
     Ok(())
 }
 
-fn visualize_leg_top_view(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, 
+pub fn visualize_leg_top_view(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, 
                          theta1: f64, theta4: f64) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("leg_visualization_top.png", (800, 600)).into_drawing_area();
     root.fill(&WHITE)?;

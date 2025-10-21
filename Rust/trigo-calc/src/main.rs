@@ -1,3 +1,5 @@
+mod visualisation;
+use crate::visualisation::{visualize_leg, visualize_leg_top_view};
 
 fn calcul (x : f64, y: f64, z: f64) {
 
