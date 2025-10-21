@@ -1,3 +1,4 @@
+
 fn calcul (x : f64, y: f64, z: f64) {
 
     let coxa: f64 = 5.0;
@@ -40,14 +41,24 @@ fn calcul (x : f64, y: f64, z: f64) {
     println!("Coxa (c')  : {:.2} cm", c_prime);
     println!("Fémur (f') : {:.2} cm", f_prime);
     println!("Tibia (t') : {:.2} cm", t_prime);
+
+    // Générer la visualisation
+    if let Err(e) = visualize_leg(x, y, z, coxa, femur, tibia, theta1, theta2, theta4) {
+        println!("Erreur lors de la génération de la visualisation : {}", e);
+    }
+
+    // Générer la vue du ciel
+    if let Err(e) = visualize_leg_top_view(x, y, z, coxa, femur, tibia, theta1, theta4) {
+        println!("Erreur lors de la génération de la vue du ciel : {}", e);
+    }
 }
 
 fn main() {
     println!("=== Programme de calcul -> trygonométrie ===");
 
-    let x = 12.0;
+    let x = 19.0;
     let y = 5.0;
-    let z = 8.0;
+    let z = -8.0;
 
     calcul(x, y, z);
 }
