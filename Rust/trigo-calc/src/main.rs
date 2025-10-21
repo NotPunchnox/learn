@@ -26,6 +26,16 @@ fn calcul (x : f64, y: f64, z: f64) {
     println!("Theta 3 (Fémur) : {:.2}°", theta3.to_degrees());
     println!("Theta 4 (Fémur) : {:.2}°", theta4.to_degrees());
     println!("Theta 5 (Tibia) : {:.2}°", theta5.to_degrees());
+
+    // Calcul des longueurs des vecteurs ( vue du ciel ) (c', f', t')
+    let c_prime = coxa;
+    let f_prime = f * theta4.to_radians().cos();
+    let t_prime = x - (c_prime + f_prime);
+
+    println!("\nLongueurs des projections des segments de la patte (vue du ciel) :");
+    println!("Coxa (c')  : {:.2} cm", c_prime);
+    println!("Fémur (f') : {:.2} cm", f_prime);
+    println!("Tibia (t') : {:.2} cm", t_prime);
 }
 
 fn main() {
