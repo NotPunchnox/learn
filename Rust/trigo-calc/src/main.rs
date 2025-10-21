@@ -15,10 +15,10 @@ fn calcul (x : f64, y: f64, z: f64) {
     let theta1 = y.atan2(x);
     let theta2 = (tpatte - coxa).atan2(z);
     let theta3_theta4 = ((femur*femur + h*h - tibia*tibia) / (2.0 * femur * h)).acos();
-    let theta7 = (180-((theta3_theta4 + theta2).to_degrees())).to_radians();
-    let theta4 = (90 - theta7.to_degrees());
-    let theta3 = (theta3_theta4.to_degrees() - theta4.to_degrees()).to_radians();
-    let theta5 = ( (femur*femur + tibia*tibia - h*h) / (2.0 * femur * tibia) ).acos();
+    let theta7 = (180.0_f64.to_radians() - (theta3_theta4 + theta2));
+    let theta4 = 90.0_f64.to_radians() - theta7;
+    let theta3 = theta3_theta4 - theta4;
+    let theta5 = ((femur*femur + tibia*tibia - h*h) / (2.0 * femur * tibia)).acos();
 
     println!("Angles calculés (en degrés) :");
     println!("Theta 1 (Coxa)  : {:.2}°", theta1.to_degrees());
