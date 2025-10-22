@@ -38,6 +38,7 @@ fn calcul(x: f64, y: f64, z: f64) {
     println!("Theta 3 (Fémur) : {:.2}°", theta3.to_degrees());
     println!("Theta 4 (Tibia) : {:.2}°", theta4.to_degrees());
     println!("Theta 5 (Tibia) : {:.2}°", theta5.to_degrees());
+    println!("Theta 7 (Interne) : {:.2}°", theta7.to_degrees());
 
     // Calcul des longueurs des vecteurs ( vue du ciel ) (c', f', t')
     let c_prime = COXA;
@@ -49,18 +50,27 @@ fn calcul(x: f64, y: f64, z: f64) {
     println!("Fémur (f') : {:.2} cm", f_prime);
     println!("Tibia (t') : {:.2} cm", t_prime);
 
+    println!("\nLongeurs des projections de la patte (vue de profil) :");
+    let c_prime_prime = COXA;
+    let f_double_prime = FEMUR * theta4.to_radians().sin();
+    let t_double_prime = (z * z + t_prime * t_prime).sqrt();
+
+    println!("Fémur (f'') : {:.2} cm", f_double_prime);
+    println!("Tibia (t'') : {:.2} cm", t_double_prime);
+
+
     // Calcul des coordonnées des articulations
-    let x_coxa = 0.0;
-    let y_coxa = 0.0;
-    let z_coxa = 0.0;
+    let x_coxa: f64 = 0.0;
+    let y_coxa: f64 = 0.0;
+    let z_coxa: f64 = 0.0;
 
-    let x_femur = COXA * theta1.cos();
-    let y_femur = COXA * theta1.sin();
-    let z_femur = 0.0;
+    let x_femur: f64 = COXA * theta1.cos();
+    let y_femur: f64 = COXA * theta1.sin();
+    let z_femur: f64 = 0.0;
 
-    let x_tibia = x_femur + FEMUR * theta1.cos() * theta4.cos();
-    let y_tibia = y_femur + FEMUR * theta1.sin() * theta4.cos();
-    let z_tibia = FEMUR * theta4.sin();
+    let x_tibia: f64 = x_femur + FEMUR * theta1.cos() * theta4.cos();
+    let y_tibia: f64 = y_femur + FEMUR * theta1.sin() * theta4.cos();
+    let z_tibia: f64 = FEMUR * theta4.sin();
 
     println!("\nCoordonnées des articulations :");
     println!(
@@ -76,6 +86,25 @@ fn calcul(x: f64, y: f64, z: f64) {
         x_tibia, y_tibia, z_tibia
     );
     println!("Cible  : X: {:.2} | Y: {:.2} | Z: {:.2}", x, y, z);
+
+
+    // Comparatif des mesures trouvées via les coordonnées et les longueurs réelles
+    println!("\nComparatif des mesures (coordonnées vs longueurs réelles) :");
+    println!(
+        "Coxa   : Coordonnées (X-Y): {:.2} cm | Longueur réelle c'': {:.2} cm",
+        ((x_femur - x_coxa).powi(2) + (z_femur - z_coxa).powi(2)).sqrt(),
+        COXA
+    );
+    println!(
+        "Fémur  : Coordonnées (X-Y): {:.2} cm | Longueur réelle f'': {:.2} cm",
+        ((x_tibia - x_femur).powi(2) + (z_tibia - z_femur).powi(2)).sqrt(),
+        FEMUR
+    );
+    println!(
+        "Tibia  : Coordonnées (X-Y): {:.2} cm | Longueur réelle t'': {:.2} cm",
+        ( (x - x_tibia).powi(2) + (z - z_tibia).powi(2) ).sqrt(),
+        TIBIA
+    );
 
     // Générer la vue du ciel (x;y)
     if let Err(e) = visualize_leg_top_view(
@@ -101,8 +130,8 @@ fn main() {
     println!("=== Programme de calcul -> trygonométrie ===");
 
     let x = 20.0;
-    let y = 4.0;
-    let z = 0.0;
+    let y = 0.0;
+    let z = -4.0;
 
     calcul(x, y, z);
 }

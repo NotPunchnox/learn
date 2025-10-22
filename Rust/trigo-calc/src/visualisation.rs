@@ -61,27 +61,6 @@ pub fn visualize_leg(
         &|c, s, st| Circle::new(c, s, st.filled())
     ))?;
 
-    // Ajouter des labels pour les points
-    chart.draw_series(std::iter::once(Text::new(
-        "Origine",
-        (coxa_pos.0 - 1.0, coxa_pos.1 - 1.5),
-        ("sans-serif", 10)
-    )))?;
-    chart.draw_series(std::iter::once(Text::new(
-        "Fémur",
-        (femur_pos.0 - 1.0, femur_pos.1 - 1.5),
-        ("sans-serif", 10)
-    )))?;
-    chart.draw_series(std::iter::once(Text::new(
-        "Tibia",
-        (tibia_pos.0 - 1.0, tibia_pos.1 - 1.5),
-        ("sans-serif", 10)
-    )))?;
-    chart.draw_series(std::iter::once(Text::new(
-        "Cible",
-        (target_pos.0 - 1.0, target_pos.1 - 1.5),
-        ("sans-serif", 10)
-    )))?;
 
     chart.configure_series_labels().draw()?;
     root.present()?;
