@@ -47,8 +47,17 @@ pub fn visualize_leg(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, 
     Ok(())
 }
 
-pub fn visualize_leg_top_view(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, 
-                         theta1: f64, theta4: f64) -> Result<(), Box<dyn std::error::Error>> {
+//! Génère la vue du ciel (top view) de la patte robotique
+//! # Arguments
+//! * `x` - Coordonnée X de la cible
+//! * `y` - Coordonnée Y de la cible
+//! * `z` - Coordonnée Z de la cible
+//! * `coxa` - Longueur du segment Coxa
+//! * `femur` - Longueur du segment Fémur
+//! * `tibia` - Longueur du segment Tibia
+//! * `theta1` - Angle de la Coxa en radians
+//! * `theta4` - Angle du Tibia en radians
+pub fn visualize_leg_top_view(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, theta1: f64, theta4: f64) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("leg_visualization_top.png", (800, 600)).into_drawing_area();
     root.fill(&WHITE)?;
     

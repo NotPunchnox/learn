@@ -29,9 +29,9 @@ fn calcul (x : f64, y: f64, z: f64) {
     // Afficher les angles calculés
     println!("Angles calculés (en degrés) :");
     println!("Theta 1 (Coxa)  : {:.2}°", theta1.to_degrees());
-    println!("Theta 2 (Coxa)  : {:.2}°", theta2.to_degrees());
+    println!("Theta 2 (Fémur)  : {:.2}°", theta2.to_degrees());
     println!("Theta 3 (Fémur) : {:.2}°", theta3.to_degrees());
-    println!("Theta 4 (Fémur) : {:.2}°", theta4.to_degrees());
+    println!("Theta 4 (Tibia) : {:.2}°", theta4.to_degrees());
     println!("Theta 5 (Tibia) : {:.2}°", theta5.to_degrees());
 
     // Calcul des longueurs des vecteurs ( vue du ciel ) (c', f', t')
@@ -44,23 +44,25 @@ fn calcul (x : f64, y: f64, z: f64) {
     println!("Fémur (f') : {:.2} cm", f_prime);
     println!("Tibia (t') : {:.2} cm", t_prime);
 
-    // Générer la visualisation
+
+
+    // Générer la vue du ciel (x;y)
+    if let Err(e) = visualize_leg_top_view(x, y, z, coxa, femur, tibia, theta1, theta4) {
+        println!("Erreur lors de la génération de la vue du ciel : {}", e);
+    }
+    // Générer la visualisation de profile (x;z)
     if let Err(e) = visualize_leg(x, y, z, coxa, femur, tibia, theta1, theta2, theta4) {
         println!("Erreur lors de la génération de la visualisation : {}", e);
     }
 
-    // Générer la vue du ciel
-    if let Err(e) = visualize_leg_top_view(x, y, z, coxa, femur, tibia, theta1, theta4) {
-        println!("Erreur lors de la génération de la vue du ciel : {}", e);
-    }
 }
 
 fn main() {
     println!("=== Programme de calcul -> trygonométrie ===");
 
     let x = 19.0;
-    let y = 5.0;
-    let z = -8.0;
+    let y = 4.0;
+    let z = -7.0;
 
     calcul(x, y, z);
 }
