@@ -60,9 +60,9 @@ fn calcul (x : f64, y: f64, z: f64) {
 fn main() {
     println!("=== Programme de calcul -> trygonométrie ===");
 
-    let x = 19.0;
+    let x = 20.0;
     let y = 4.0;
-    let z = -7.0;
+    let z = 0.0;
 
     calcul(x, y, z);
 }

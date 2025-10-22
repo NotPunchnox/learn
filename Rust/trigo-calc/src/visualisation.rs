@@ -9,7 +9,7 @@ pub fn visualize_leg(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, 
         .margin(20)
         .x_label_area_size(40)
         .y_label_area_size(40)
-        .build_cartesian_2d(-2.0..25.0, -2.0..15.0)?;
+        .build_cartesian_2d(-10.0..25.0, -10.0..15.0)?;
 
     chart.configure_mesh().draw()?;
 
@@ -32,6 +32,23 @@ pub fn visualize_leg(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, 
         vec![femur_end, target], &GREEN
     ))?.label("Tibia").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 10, y)], &GREEN));
 
+    // Afficher les longueurs des segments
+    chart.draw_series(std::iter::once(Text::new(
+        format!("Coxa: {:.2} cm", coxa),
+        (coxa / 2.0, -1.0),
+        ("sans-serif", 15)
+    )))?;
+    chart.draw_series(std::iter::once(Text::new(
+        format!("Fémur: {:.2} cm", femur),
+        ((coxa + femur_end.0) / 2.0, femur_end.1 / 2.0),
+        ("sans-serif", 15)
+    )))?;
+    chart.draw_series(std::iter::once(Text::new(
+        format!("Tibia: {:.2} cm", tibia),
+        ((femur_end.0 + target.0) / 2.0, (femur_end.1 + target.1) / 2.0),
+        ("sans-serif", 15)
+    )))?;
+
     // Dessiner les points
     chart.draw_series(PointSeries::of_element(
         vec![origin, coxa_end, femur_end, target],
@@ -47,17 +64,8 @@ pub fn visualize_leg(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, 
     Ok(())
 }
 
-//! Génère la vue du ciel (top view) de la patte robotique
-//! # Arguments
-//! * `x` - Coordonnée X de la cible
-//! * `y` - Coordonnée Y de la cible
-//! * `z` - Coordonnée Z de la cible
-//! * `coxa` - Longueur du segment Coxa
-//! * `femur` - Longueur du segment Fémur
-//! * `tibia` - Longueur du segment Tibia
-//! * `theta1` - Angle de la Coxa en radians
-//! * `theta4` - Angle du Tibia en radians
-pub fn visualize_leg_top_view(x: f64, y: f64, z: f64, coxa: f64, femur: f64, tibia: f64, theta1: f64, theta4: f64) -> Result<(), Box<dyn std::error::Error>> {
+// Génère la vue du ciel (top view) de la patte robotique
+pub fn visualize_leg_top_view(x: f64, y: f64, _z: f64, coxa: f64, femur: f64, _tibia: f64, theta1: f64, theta4: f64) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("leg_visualization_top.png", (800, 600)).into_drawing_area();
     root.fill(&WHITE)?;
     
