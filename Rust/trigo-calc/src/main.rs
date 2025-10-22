@@ -92,7 +92,7 @@ fn main() {
 
     let x = 20.0;
     let y = 4.0;
-    let z = 0.0;
+    let z = -8.0;
 
     calcul(x, y, z);
 }
