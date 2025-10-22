@@ -49,20 +49,39 @@ fn calcul (x : f64, y: f64, z: f64) {
     let y_coxa = 0.0;
     let z_coxa = 0.0;
 
-    let x_femur = coxa * theta4.to_radians().cos();
-    let y_femur = 0.0;
-    let z_femur = coxa * theta4.to_radians().sin();
+    let x_femur = coxa * theta1.cos();
+    let y_femur = coxa * theta1.sin();
+    let z_femur = 0.0;
 
-    let x_tibia = x_femur + femur * (theta2 + theta3).cos();
-    let y_tibia = 0.0;
-    let z_tibia = z_femur + femur * (theta2 + theta3).sin();
+    let x_tibia = x_femur + femur * theta4.cos() * theta1.cos();
+    let y_tibia = y_femur + femur * theta4.cos() * theta1.sin();
+    let z_tibia = femur * theta4.sin();
 
-    // Générer la vue du ciel (x;y)
-    if let Err(e) = visualize_leg_top_view(x, y, z, coxa, femur, tibia, theta1, theta4) {
+    println!("\nCoordonnées des articulations :");
+    println!("Coxa    : ({:.2}, {:.2}, {:.2})", x_coxa, y_coxa, z_coxa);
+    println!("Fémur   : ({:.2}, {:.2}, {:.2})", x_femur, y_femur, z_femur);
+    println!("Tibia   : ({:.2}, {:.2}, {:.2})", x_tibia, y_tibia, z_tibia);
+    println!("Cible   : ({:.2}, {:.2}, {:.2})", x, y, z);
+
+    // Générer la vue du ciel (x;y) avec les coordonnées précises
+    if let Err(e) = visualize_leg_top_view(
+        x, y, z, 
+        x_coxa, y_coxa, 
+        x_femur, y_femur, 
+        x_tibia, y_tibia, 
+        theta1
+    ) {
         println!("Erreur lors de la génération de la vue du ciel : {}", e);
     }
-    // Générer la visualisation de profile (x;z)
-    if let Err(e) = visualize_leg(x, y, z, coxa, femur, tibia, theta1, theta2, theta4) {
+    
+    // Générer la visualisation de profile (x;z) avec les coordonnées précises
+    if let Err(e) = visualize_leg(
+        x, y, z, 
+        x_coxa, z_coxa, 
+        x_femur, z_femur, 
+        x_tibia, z_tibia, 
+        theta1, theta2, theta4
+    ) {
         println!("Erreur lors de la génération de la visualisation : {}", e);
     }
 
