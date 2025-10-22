@@ -142,7 +142,11 @@ fn calcul(x: f64, y: f64, z: f64) {
         ((x_end - x_tibia).powi(2) + (y_end - y_tibia).powi(2) + (z_end - z_tibia).powi(2)).sqrt(),
         TIBIA
     );
-    println!("Cible finale: Coordonnées (X-Y-Z): {:.2} cm; {:.2} cm; {:.2} cm | Cible réelle (X-Y-Z): {} cm; {} cm; {} cm", x_end, y_end, z_end, x, y, z);
+    println!(
+        "Cible  : Coordonnées (X-Y-Z): {:.2} cm; {:.2} cm; {:.2} cm | Cible réelle (X-Y-Z): {} cm; {} cm; {} cm",
+        x_end, y_end, z_end,
+        x, y, z
+    );
 
     // Génération des visualisations 2D
     if let Err(e) = visualize_leg_top_view(
@@ -168,7 +172,7 @@ fn main() {
     println!("=== Programme de calcul -> trygonométrie ===");
 
     let x = 20.0;
-    let y = 6.0;
+    let y = 0.0;
     let z = -4.0;
 
     calcul(x, y, z);
