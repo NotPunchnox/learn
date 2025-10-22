@@ -44,7 +44,18 @@ fn calcul (x : f64, y: f64, z: f64) {
     println!("Fémur (f') : {:.2} cm", f_prime);
     println!("Tibia (t') : {:.2} cm", t_prime);
 
+    // Calcul des coordonnées des articulations
+    let x_coxa = 0.0;
+    let y_coxa = 0.0;
+    let z_coxa = 0.0;
 
+    let x_femur = coxa * theta4.to_radians().cos();
+    let y_femur = 0.0;
+    let z_femur = coxa * theta4.to_radians().sin();
+
+    let x_tibia = x_femur + femur * (theta2 + theta3).cos();
+    let y_tibia = 0.0;
+    let z_tibia = z_femur + femur * (theta2 + theta3).sin();
 
     // Générer la vue du ciel (x;y)
     if let Err(e) = visualize_leg_top_view(x, y, z, coxa, femur, tibia, theta1, theta4) {
