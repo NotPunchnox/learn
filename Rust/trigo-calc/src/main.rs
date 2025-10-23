@@ -1,5 +1,5 @@
 mod visualisation;
-use crate::visualisation::{visualize_leg, visualize_leg_top_view};
+use crate::visualisation::{visualize_leg, visualize_leg_top_view, MatrixPoint};
 
 const COXA: f64 = 5.0;
 const FEMUR: f64 = 6.3;
@@ -151,22 +151,25 @@ fn calcul(x: f64, y: f64, z: f64) {
         x, y, z
     );
 
+
+    // Créer la structure MatrixPoint avec toutes les coordonnées
+    let points = MatrixPoint::new(
+        (x_coxa, y_coxa, z_coxa),
+        (x_femur, y_femur, z_femur),
+        (x_tibia, y_tibia, z_tibia),
+        (x_end, y_end, z_end),
+    );
+
+    // Afficher un résumé complet (coordonnées + longueurs calculées)
+    points.print_summary();
+
     // Génération des visualisations 2D
-    if let Err(e) = visualize_leg_top_view(
-        (x_coxa, y_coxa),
-        (x_femur, y_femur),
-        (x_tibia, y_tibia),
-        (x_end, y_end),
-    ) {
+    if let Err(e) = visualize_leg_top_view(points.clone()) {
         println!("Erreur lors de la génération de la vue du ciel : {}", e);
+        return;
     }
     
-    if let Err(e) = visualize_leg(
-        (x_coxa, z_coxa),
-        (x_femur, z_femur),
-        (x_tibia, z_tibia),
-        (x_end, z_end),
-    ) {
+    if let Err(e) = visualize_leg(points) {
         println!("Erreur lors de la génération de la visualisation : {}", e);
     }
 }
@@ -175,8 +178,8 @@ fn main() {
     println!("=== Programme de calcul -> trygonométrie ===");
 
     let x = 20.0;
-    let y = 0.0;
-    let z = -4.0;
+    let y = -5.0;
+    let z = -5.0;
 
     calcul(x, y, z);
 }
