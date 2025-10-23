@@ -56,27 +56,7 @@ fn calcul(x: f64, y: f64, z: f64) {
     println!("Angle d'élévation : {:.2}°", elev_angle.to_degrees());
     println!("Angle au coxa : {:.2}°", angle_au_coxa.to_degrees());
 
-    // Projections horizontales des segments pour vue de dessus
-    let c_prime = COXA;
-    let f_prime = FEMUR * theta4.cos();
-    let t_prime = horizontal_dist - f_prime;
-
-    println!("\nLongueurs des projections des segments de la patte (vue du ciel) :");
-    println!("Coxa (c')  : {:.2} cm", c_prime);
-    println!("Fémur (f') : {:.2} cm", f_prime);
-    println!("Tibia (t') : {:.2} cm", t_prime);
-
-    // Projections verticales pour vue de profil
-    println!("\nLongeurs des projections de la patte (vue de profil) :");
-    let _c_prime_prime = COXA;
-    let f_double_prime = FEMUR * theta4.sin();
-    let t_double_prime = (z * z + t_prime * t_prime).sqrt();
-
-    println!("Fémur (f'') : {:.2} cm", f_double_prime);
-    println!("Tibia (t'') : {:.2} cm", t_double_prime);
-
     // Coordonnées 3D de chaque articulation
-    
     // Origine: base du coxa
     let x_coxa: f64 = 0.0;
     let y_coxa: f64 = 0.0;
@@ -107,50 +87,6 @@ fn calcul(x: f64, y: f64, z: f64) {
     let x_end: f64 = x_tibia + tibia_extension_x;
     let y_end: f64 = y_tibia + tibia_extension_y;
     let z_end: f64 = z_tibia + tibia_extension_z;
-
-    println!("\nCoordonnées des articulations :");
-    println!(
-        "Coxa   : X: {:.2} | Y: {:.2} | Z: {:.2}",
-        x_coxa, y_coxa, z_coxa
-    );
-    println!(
-        "Fémur  : X: {:.2} | Y: {:.2} | Z: {:.2}",
-        x_femur, y_femur, z_femur
-    );
-    println!(
-        "Tibia  : X: {:.2} | Y: {:.2} | Z: {:.2}",
-        x_tibia, y_tibia, z_tibia
-    );
-    println!(
-        "Cible calculée : X: {:.2} | Y: {:.2} | Z: {:.2}",
-        x_end, y_end, z_end
-    );
-    println!("Cible visée    : X: {:.2} | Y: {:.2} | Z: {:.2}", x, y, z);
-
-
-    // Vérification: distances calculées vs longueurs théoriques des segments
-    println!("\nComparatif des mesures (coordonnées vs longueurs réelles) :");
-    println!(
-        "Coxa   : Coordonnées (X-Y): {:.2} cm | Longueur réelle c'': {:.2} cm",
-        ((x_femur - x_coxa).powi(2) + (y_femur - y_coxa).powi(2) + (z_femur - z_coxa).powi(2)).sqrt(),
-        COXA
-    );
-    println!(
-        "Fémur  : Coordonnées (X-Y): {:.2} cm | Longueur réelle f'': {:.2} cm",
-        ((x_tibia - x_femur).powi(2) + (y_tibia - y_femur).powi(2) + (z_tibia - z_femur).powi(2)).sqrt(),
-        FEMUR
-    );
-    println!(
-        "Tibia  : Coordonnées (X-Y): {:.2} cm | Longueur réelle t'': {:.2} cm",
-        ((x_end - x_tibia).powi(2) + (y_end - y_tibia).powi(2) + (z_end - z_tibia).powi(2)).sqrt(),
-        TIBIA
-    );
-    println!(
-        "Cible  : Coordonnées (X-Y-Z): {:.2} cm; {:.2} cm; {:.2} cm | Cible réelle (X-Y-Z): {} cm; {} cm; {} cm",
-        x_end, y_end, z_end,
-        x, y, z
-    );
-
 
     // Créer la structure MatrixPoint avec toutes les coordonnées
     let points = MatrixPoint::new(
