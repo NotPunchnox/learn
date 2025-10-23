@@ -18,10 +18,12 @@ fn calcul(x: f64, y: f64, z: f64) {
         tpatte
     );
 
-    let h = (z * z + (x - COXA) * (x - COXA)).sqrt();
-
     // Theta 1: angle azimuthal du coxa (rotation autour de Z)
     let theta1 = y.atan2(x);
+    
+    // Distance horizontale réelle après rotation du coxa
+    let horizontal_dist = tpatte - COXA;
+    let h = (z * z + horizontal_dist * horizontal_dist).sqrt();
     
     // Application de la loi des cosinus pour trouver l'angle d'articulation entre fémur et tibia
     let cos_theta5 = (FEMUR * FEMUR + TIBIA * TIBIA - h * h) / (2.0 * FEMUR * TIBIA);
@@ -32,7 +34,8 @@ fn calcul(x: f64, y: f64, z: f64) {
         return;
     }
     
-    let theta5 = cos_theta5.acos(); // angle entre fémur et tibia
+    // angle entre fémur et tibia
+    let theta5 = cos_theta5.acos();
     
     // (coxa position -> target) à (coxa articulation -> femur -> target)
     // cos(angle_au_coxa) = (FEMUR^2 + h^2 - TIBIA^2) / (2 * FEMUR * h)
@@ -56,7 +59,7 @@ fn calcul(x: f64, y: f64, z: f64) {
     // Projections horizontales des segments pour vue de dessus
     let c_prime = COXA;
     let f_prime = FEMUR * theta4.cos();
-    let t_prime = tpatte - (c_prime + f_prime);
+    let t_prime = horizontal_dist - f_prime;
 
     println!("\nLongueurs des projections des segments de la patte (vue du ciel) :");
     println!("Coxa (c')  : {:.2} cm", c_prime);
