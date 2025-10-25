@@ -6,3 +6,5 @@ C/DeepNeuralNetwork/mnist_train.csv
 
 Rust/*/target
 Rust/*/Cargo.lock
+
+C++/*/build
