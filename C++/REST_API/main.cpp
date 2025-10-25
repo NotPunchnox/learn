@@ -15,7 +15,7 @@ namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
-http::response<<http::string_body> handle_request(const http::request<http::string_body>& req) {
+http::response<http::string_body> handle_request(const http::request<http::string_body>& req) {
  
     if (req.method() == http::verb::get) {
         http::response<http::string_body> res{http::status::ok, req.version()};
@@ -113,7 +113,7 @@ private:
 int main() {
     try {
         auto const address = net::ip::make_address("0.0.0.0");
-        usigned short port 8080;
+        unsigned short port = 8080;
 
         net::io_context ioc{1};
 
