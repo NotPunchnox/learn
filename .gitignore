@@ -8,3 +8,5 @@ Rust/*/target
 Rust/*/Cargo.lock
 
 C++/*/build
+build
+.vscode

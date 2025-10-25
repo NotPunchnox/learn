@@ -125,6 +125,8 @@ int main() {
         std::make_shared<Listener>(ioc, tcp::endpoint{address, port});
 
         ioc.run();
+
+        std::cout << "Server started at http://0.0.0.0:8080" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
