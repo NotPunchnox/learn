@@ -1,5 +1,3 @@
-#pragma once
-
 #include <string>
 
 // Déclaration de la classe Animal
@@ -14,7 +12,7 @@ public:
     // Getters
     int getId() const;
     const std::string& getNom() const;
-    const std::string& getEspace() const;
+    const std::string& getEspece() const;
     int getAge() const;
     double getPoids() const;
     int getIdEnclos() const;
@@ -22,7 +20,7 @@ public:
     // Setters
     void setId(int id);
     void setNom(const std::string& nom);
-    void setEspace(const std::string& espace);
+    void setEspece(const std::string& espece);
     void setAge(int age);
     void setPoids(double poids);
     void setIdEnclos(int id_enclos);
