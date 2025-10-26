@@ -18,3 +18,7 @@ std::string& Mammifere::getTypeFourrure() const {
 void Mammifere::setTypeFourrure(std::string& nouvelleFourrure) const {
     this->typeFourrure = nouvelleFourrure;
 }
+
+void Mammifere::emettreSon() const {
+    std::cout << "Le mammifère " << nom << " Grogne..." << std::endl;
+}
