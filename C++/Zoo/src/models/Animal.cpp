@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 
-#include "../include/models/Animal.hpp"
+#include "../../include/models/Animal.hpp"
 
 // Constructeur
 Animal::Animal(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos)
