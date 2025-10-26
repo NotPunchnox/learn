@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 
 // Déclaration de la classe Animal
