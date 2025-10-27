@@ -7,7 +7,7 @@ class Reptile: public Animal {
 
 public:
     // Constructeur
-    Reptile(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos, const std::string &envergure);
+    Reptile(int id, const std::string &nom, const std::string &espece, int age, double poids, int id_enclos, const std::string &envergure);
 
     // Destructeur
     virtual ~Reptile() = default;
