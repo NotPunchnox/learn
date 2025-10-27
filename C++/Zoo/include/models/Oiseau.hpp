@@ -7,21 +7,21 @@ class Reptile: public Animal {
 
 public:
     // Constructeur
-    Reptile(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos, const std::string &typeFourrure);
+    Reptile(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos, const std::string &envergure);
 
     // Destructeur
     virtual ~Reptile() = default;
 
     // Getters
-    const std::string& getTypeFourrure() const;
+    const std::string& getEnvergure() const;
 
     // Setters
-    void setTypeFourrure(const std::string &typeFourrure);
+    void setEnvergure(const std::string &envergure);
 
     // Méthodes
     void emettreSon() const override;
 
 private:
-    std::string typeFourrure;
+    std::string envergure;
     
 };

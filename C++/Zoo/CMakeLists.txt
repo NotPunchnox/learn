@@ -12,6 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(ZOO
     main.cpp
     src/models/Animal.cpp
+    src/models/Mammifere.cpp
 )
 
 target_include_directories(ZOO PRIVATE include)

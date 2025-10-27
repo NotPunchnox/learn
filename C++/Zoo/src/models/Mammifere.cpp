@@ -5,20 +5,20 @@
 
 
 // Constructeur
-Mammifere::Mammifere(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos, const std::string &typeFourrure)
+Reptile::Reptile(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos, const std::string &typeFourrure)
     : Animal(id, nom, espece, age, poids, id_enclos), typeFourrure(typeFourrure) {};
 
 
 // Getters
-const std::string& Mammifere::getTypeFourrure() const {
+const std::string& Reptile::getTypeFourrure() const {
     return typeFourrure;
 }
 
 // Setters
-void Mammifere::setTypeFourrure(const std::string& nouvelleFourrure) {
+void Reptile::setTypeFourrure(const std::string& nouvelleFourrure) {
     this->typeFourrure = nouvelleFourrure;
 }
 
-void Mammifere::emettreSon() const {
-    std::cout << "Le mammifère " << nom << " Grogne..." << std::endl;
+void Reptile::emettreSon() const {
+    std::cout << "Le mammifère " << getNom() << " Grogne..." << std::endl;
 }
