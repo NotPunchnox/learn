@@ -13,6 +13,8 @@ add_executable(ZOO
     main.cpp
     src/models/Animal.cpp
     src/models/Mammifere.cpp
+    src/models/Oiseau.cpp
+    src/models/Reptile.cpp
 )
 
 target_include_directories(ZOO PRIVATE include)
