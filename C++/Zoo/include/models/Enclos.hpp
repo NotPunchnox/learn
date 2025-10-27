@@ -7,7 +7,7 @@ class Enclos {
 public:
     // Constructeur
     Enclos();
-    Enclos(int id, std::string &type, double taille, int capacite);
+    Enclos(int id, const std::string &type, double taille, int capacite);
 
     // Destructeur
     virtual ~Enclos() = default;
@@ -21,10 +21,10 @@ public:
 
     // Setters
     void setID(int id);
-    void setType(const std::string& type);
+    void setType(const std::string &type);
     void setTaille(double taille);
     void setCapacite(int capacite);
-    void setAnimaux(const std::vector<Animal>);
+    void setAnimaux(const std::vector<Animal> animaux);
 
     // Méthodes
     void ajouterAnimal(const Animal animal);
