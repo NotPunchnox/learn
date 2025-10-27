@@ -53,7 +53,7 @@ void Enclos::afficherAnimaux() const {
               << "=====================================================" << std::endl;
 
     for (Animal a : animaux) {
-        std::cout << "Nom: " << a.getNom() << "\n" << std::endl;
+        std::cout << "Nom: " << a.getNom() << std::endl;
     }
 }
 int Enclos::getNbAnimaux() const {

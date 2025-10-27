@@ -21,7 +21,10 @@ int main(void)
     // Test de la classe Enclos
     Enclos petitEnclo(1, "petit", 20.5, 2);
     petitEnclo.ajouterAnimal(serpent);
+    petitEnclo.ajouterAnimal(perroquet);
+
     petitEnclo.afficherAnimaux();
+    petitEnclo.getNbAnimaux();
 
     return 0;
 }
