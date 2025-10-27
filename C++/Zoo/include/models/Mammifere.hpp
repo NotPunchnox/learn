@@ -7,20 +7,21 @@ class Mammifere: public Animal {
 
 public:
     // Constructeur
-    Mammifere(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos, std::string& typeFourrure);
+    Mammifere(int id, const std::string &nom, const std::string& espece, int age, double poids, int id_enclos, const std::string &typeFourrure);
 
     // Destructeur
     virtual ~Mammifere() = default;
 
     // Getters
-    std::string& getTypeFourrure() const;
+    const std::string& getTypeFourrure() const;
 
     // Setters
-    void setTypeFourrure(std::string&) const;
+    void setTypeFourrure(const std::string &typeFourrure);
 
     // Méthodes
-    void emettreSon() const;
+    void emettreSon() const override;
 
-protected:
-    std::string& typeFourrure;
+private:
+    std::string typeFourrure;
+    
 };
