@@ -1,19 +1,19 @@
 #include <string>
 #include <iostream>
-#include "../../include/models/OIseau.hpp"
+#include "../../include/models/Oiseau.hpp"
 
-Reptile::Reptile(int id, const std::string &nom, const std::string &espece, int age, double poids, int id_enclos, const std::string &envergure)
+Oiseau::Oiseau(int id, const std::string &nom, const std::string &espece, int age, double poids, int id_enclos, const std::string &envergure)
     : Animal(id, nom, espece, age, poids, id_enclos), envergure(envergure) {};
 
 
-const std::string& Reptile::getEnvergure() const {
+const std::string& Oiseau::getEnvergure() const {
     return envergure;
 }
 
-void Reptile::setEnvergure(const std::string &envergure) {
+void Oiseau::setEnvergure(const std::string &envergure) {
     this->envergure = envergure;
 }
 
-void Reptile::emettreSon() const {
+void Oiseau::emettreSon() const {
     std::cout << "L'oiseau" << getNom() << "chante" << std::endl;
 }

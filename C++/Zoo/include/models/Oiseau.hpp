@@ -3,14 +3,14 @@
 #include <string>
 
 // Déclaration de l'héritage mammifère
-class Reptile: public Animal {
+class Oiseau: public Animal {
 
 public:
     // Constructeur
-    Reptile(int id, const std::string &nom, const std::string &espece, int age, double poids, int id_enclos, const std::string &envergure);
+    Oiseau(int id, const std::string &nom, const std::string &espece, int age, double poids, int id_enclos, const std::string &envergure);
 
     // Destructeur
-    virtual ~Reptile() = default;
+    virtual ~Oiseau() = default;
 
     // Getters
     const std::string& getEnvergure() const;
