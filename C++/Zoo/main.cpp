@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    Oiseau lion(1, "Simba", "Panthera leo", 5, 190.5, 101, "dorée");
+    Reptile lion(1, "Simba", "Panthera leo", 5, 190.5, 101, "dorée");
     
     lion.afficherInfos();
     lion.emettreSon();
