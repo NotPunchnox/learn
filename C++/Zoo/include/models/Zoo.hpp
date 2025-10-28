@@ -2,7 +2,6 @@
 #include "./Employe.hpp"
 #include "./Enclos.hpp"
 
-
 class Zoo {
 
 public:
@@ -10,6 +9,9 @@ public:
     // Constructeur
     Zoo();
     Zoo(const std::vector<Enclos> enclosList, const std::vector<Employe> employeList);
+
+    // Destructeur
+    virtual ~Zoo() = default;
 
     // Getters
     const std::vector<Enclos> getEnclos() const;
