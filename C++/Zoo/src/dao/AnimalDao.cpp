@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <memory>
 #include <mysqlx/xdevapi.h>
 #include "../../include/models/Animal.hpp"
 #include "../../include/utils/DatabaseManager.hpp"
