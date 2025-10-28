@@ -1,15 +1,11 @@
-#include <iostream>
+#include <string>
 #include <mysqlx/xdevapi.h>
-
-using ::std::cout;
-using ::std::endl;
-using namespace::mysqlx;
-
 
 class DatabaseManager {
 
 public:
     // Constructeur
+    DatabaseManager();
     DatabaseManager(const std::string &host, const std::string &user, const std::string &password, const std::string &database, int port = 33060);
 
     // Destructeur
@@ -17,7 +13,7 @@ public:
 
     // Méthodes
     bool connecter();
-    void deconnercter();
+    void deconnecter();
 
     mysqlx::Session* getSession();
 
