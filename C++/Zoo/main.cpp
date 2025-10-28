@@ -2,6 +2,7 @@
 #include "include/models/Oiseau.hpp"
 #include "include/models/Reptile.hpp"
 #include "include/models/Enclos.hpp"
+#include "include/models/Employe.hpp"
 
 int main(void)
 {
@@ -25,6 +26,12 @@ int main(void)
 
     petitEnclo.afficherAnimaux();
     petitEnclo.getNbAnimaux();
+
+
+    // Test de la classe Employe
+    Employe unEmploye(1, "Jhon", "Garde", 1.5, petitEnclo.getID());
+    unEmploye.afficherInfos();
+
 
     return 0;
 }
