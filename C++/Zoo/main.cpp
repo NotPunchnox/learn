@@ -4,9 +4,8 @@
 #include "include/models/Enclos.hpp"
 #include "include/models/Employe.hpp"
 
-int main(void)
-{
-    // Test de la classe Mammifere
+int test(void) {
+     // Test de la classe Mammifere
     Mammifere lion(1, "Simba", "Panthera leo", 5, 190.5, 101, "dorée");
     
     lion.afficherInfos();
@@ -34,4 +33,9 @@ int main(void)
 
 
     return 0;
+}
+
+int main(void)
+{
+   test();
 }

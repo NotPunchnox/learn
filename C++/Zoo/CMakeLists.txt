@@ -32,8 +32,9 @@ add_executable(ZOO
     src/models/Reptile.cpp
     src/models/Enclos.cpp
     src/models/Employe.cpp
-    # src/models/Zoo.cpp
+    src/models/Zoo.cpp
     src/utils/DatabaseManager.cpp
+    src/dao/AnimalDao.cpp
 )
 
 target_include_directories(ZOO PRIVATE include)
