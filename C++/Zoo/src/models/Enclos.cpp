@@ -48,6 +48,7 @@ void Enclos::setAnimaux(const std::vector<Animal> animaux) {
 void Enclos::ajouterAnimal(const Animal animal) {
     animaux.push_back(animal);
 }
+
 void Enclos::afficherAnimaux() const {
     std::cout << "Liste des Animaux présent dans l'Enclos : " << getID() << "\n"
               << "=====================================================" << std::endl;
@@ -56,6 +57,7 @@ void Enclos::afficherAnimaux() const {
         std::cout << "Nom: " << a.getNom() << std::endl;
     }
 }
+
 int Enclos::getNbAnimaux() const {
     return animaux.size();
 }
