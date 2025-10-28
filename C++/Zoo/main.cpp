@@ -1,9 +1,14 @@
 #include <iostream>
+#include <vector>
+#include <memory>
+#include "include/utils/DatabaseManager.hpp"
 #include "include/dao/AnimalDao.hpp"
+#include "include/models/Animal.hpp"
 
 
 int main(void)
 {
+   std::cout << "test" << std::endl;
 
    DatabaseManager *db = new DatabaseManager("localhost", "root", "password", "zoo_db");
 
@@ -16,5 +21,6 @@ int main(void)
    {
       animal.afficherInfos();
    }
-   
+
+   return 0;
 }
