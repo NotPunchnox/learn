@@ -8,7 +8,7 @@ mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 cmake .. 
-cmake --build . --config Debug
+cmake --build . --config Release
 
 EXEC_PATH=$(find . -type f \( -iname "${EXE_NAME}" -o -iname "${EXE_NAME}.exe" \) -perm /111 -print -quit || true)
 

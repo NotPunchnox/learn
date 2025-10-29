@@ -8,6 +8,16 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Forcer la build OBLIGATOIREMENT en mode Release
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
+
+# Configuration spécifique pour MSVC
+if (MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
+# Configuration des chemins pour MySQL Connector C++ ( windows )
 if(WIN32)
     set(MYSQL_CONNECTOR_PATH "C:\\Program Files\\MySQL\\MySQL Connector C++ 9.5")
     set(MYSQL_INC "${MYSQL_CONNECTOR_PATH}\\include")
@@ -25,6 +35,7 @@ if(WIN32)
 
 endif()
 
+# Ajout des fichiers sources
 add_executable(ZOO
     main.cpp
     src/models/Animal.cpp
@@ -38,5 +49,6 @@ add_executable(ZOO
     src/dao/AnimalDao.cpp
 )
 
+# Inclusion des répertoires d'en-têtes
 target_include_directories(ZOO PRIVATE include)
 target_link_libraries(ZOO PRIVATE mysqlcppconn libssl libcrypto mysqlcppconnx)
