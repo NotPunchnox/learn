@@ -7,6 +7,31 @@
 
 AnimalDao::AnimalDao(DatabaseManager* db) : db(db) {};
 
+/*
+    === Mini doc SQL ===
+    sql(std::string(query)).execute();
+
+    mysqlx::SqlStatement req = session->sql("INSERT INTO exemple (key) VALUES (?)");
+    req.bind(value_param, ...).execute();
+
+    === Schéma animal ===
+    +--------------+--------------------------------------+------+-----+---------+----------------+
+    | Field        | Type                                 | Null | Key | Default | Extra          |
+    +--------------+--------------------------------------+------+-----+---------+----------------+
+    | id           | int                                  | NO   | PRI | NULL    | auto_increment |
+    | nom          | varchar(100)                         | NO   |     | NULL    |                |
+    | espece       | varchar(100)                         | NO   |     | NULL    |                |
+    | age          | int                                  | NO   |     | NULL    |                |
+    | poids        | double                               | NO   |     | NULL    |                |
+    | id_enclos    | int                                  | NO   | MUL | NULL    |                |
+    | type_animal  | enum('MAMMIFERE','OISEAU','REPTILE') | NO   |     | NULL    |                |
+    | typeFourrure | varchar(100)                         | YES  |     | NULL    |                |
+    | envergure    | double                               | YES  |     | NULL    |                |
+    | estVenimeux  | tinyint(1)                           | YES  |     | NULL    |                |
+    +--------------+--------------------------------------+------+-----+---------+----------------+
+
+*/
+
 std::vector<Animal> AnimalDao::getAll() {
     std::vector<Animal> result;
 
@@ -42,4 +67,15 @@ std::vector<Animal> AnimalDao::getAll() {
     }
 
     return result;
+}
+
+void AnimalDao::insert(Animal* animal) {
+    try {
+        mysqlx::Session* session = db->getSession();
+        mysqlx::SqlResult res = session->sql("INSERT INTO animal (id, nom, espece, age, poids, id_enclos, type_animal, typeFourrure, envergure, estVenimeux) VALUES ()")
+
+    } catch (const std::exception& e) {
+        std::cerr << "Erreur SQL : " << e.what() << std::endl;
+    }
+
 }
