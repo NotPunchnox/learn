@@ -1,12 +1,11 @@
-#pragma once
 #include <string>
-#include <memory>
 #include <mysqlx/xdevapi.h>
 
 class DatabaseManager {
 
 public:
     // Constructeur
+    DatabaseManager();
     DatabaseManager(const std::string &host, const std::string &user, const std::string &password, const std::string &database, int port = 33060);
 
     // Destructeur

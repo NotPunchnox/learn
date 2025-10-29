@@ -1,13 +1,17 @@
 #include <string>
 #include <iostream>
-#include <memory>
 #include <mysqlx/xdevapi.h>
 #include "../../include/utils/DatabaseManager.hpp"
 
 // Constructeur
+DatabaseManager::DatabaseManager() : host(""), user(""), password(""), database(""), port(33060) {};
 DatabaseManager::DatabaseManager(const std::string &host, const std::string &user, const std::string &password, const std::string &database, int port)
     : host(host), user(user), password(password), database(database), port(port) {};
 
+// Destructeur
+DatabaseManager::~DatabaseManager() {
+    deconnecter();
+}
 
 // Méthodes
 bool DatabaseManager::connecter() {
