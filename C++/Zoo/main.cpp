@@ -12,7 +12,11 @@ int main(void)
    DatabaseManager *db = new DatabaseManager("localhost", "root", "password", "zoo_db");
 
    // Connexion à la base de données
-   db->connecter();
+   if (!db->connecter()) {
+      std::cerr << "Échec de la connexion à la base de données." << std::endl;
+      delete db;
+      return 1;
+   }
 
    AnimalDao animalDao(db);
    std::vector<Animal> listeAnimaux = animalDao.getAll();
