@@ -1,5 +1,5 @@
 #include <vector>
-#include "../utils/DatabaseManager.cpp"
+#include "../include/utils/DatabaseManager.hpp"
 #include "../../include/models/Zoo.hpp"
 
 // Constructeur

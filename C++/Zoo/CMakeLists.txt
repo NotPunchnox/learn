@@ -12,6 +12,7 @@ if(WIN32)
     set(MYSQL_CONNECTOR_PATH "C:\\Program Files\\MySQL\\MySQL Connector C++ 9.5")
     set(MYSQL_INC "${MYSQL_CONNECTOR_PATH}\\include")
     set(MYSQL_LIB "${MYSQL_CONNECTOR_PATH}\\lib64")
+    set(MYSQL_LIB "${MYSQL_CONNECTOR_PATH}\\lib64\\vs14")
     
     if(EXISTS "${MYSQL_INC}")
         include_directories("${MYSQL_INC}")
@@ -38,3 +39,4 @@ add_executable(ZOO
 )
 
 target_include_directories(ZOO PRIVATE include)
+target_link_libraries(ZOO PRIVATE mysqlcppconn libssl libcrypto mysqlcppconnx)
