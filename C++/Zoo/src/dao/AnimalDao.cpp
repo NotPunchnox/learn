@@ -109,6 +109,21 @@ void AnimalDao::insert(Animal* animal) {
     }
 }
 
+void AnimalDao::update(Animal* animal) {
+    try {
+
+        mysqlx::Session* session = db->getSession();
+
+        mysqlx::SqlStatement req = session->sql("UPDATE animal SET nom = ?, espece = ?, age = ?, poids = ?, id_enclos = ? WHERE id = ?")
+            .bind(animal->getNom(), animal->getEspece(), animal->getAge(), animal->getPoids(), animal->getIdEnclos(), animal->getId());
+
+        mysqlx::SqlResult res = req.execute();
+
+    } catch (const std::exception& e) {
+        std::cerr << "Erreur SQL : " << e.what() << std::endl;
+    }
+}
+
 void AnimalDao::remove(Animal* animal) {
     try {
 
