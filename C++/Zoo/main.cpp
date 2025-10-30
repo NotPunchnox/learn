@@ -31,7 +31,7 @@ int main(void)
 
    // Déclaration d'un mammifère
    Mammifere lion(0, "Simba", "Lion", 5, 190.5, 1, "Court");
-   animalDao.insert(&lion);
+   // animalDao.insert(&lion);
    std::cout << "Type animal: " << lion.getType() << std::endl;
 
    // Nettoyage de la mémoire

@@ -20,6 +20,9 @@ const std::string& Animal::getEspece() const {
 int Animal::getAge() const {
     return age;
 }
+double Animal::getPoids() const {
+    return poids;
+}
 int Animal::getIdEnclos() const {
     return id_enclos;
 }

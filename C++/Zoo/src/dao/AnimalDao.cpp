@@ -88,7 +88,6 @@ void AnimalDao::insert(Animal* animal) {
         mysqlx::Session* session = db->getSession();
         std::string query = "INSERT INTO animal (id, nom, espece, age, poids, id_enclos, type_animal, typeFourrure, envergure, estVenimeux) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         mysqlx::SqlStatement req = session->sql(query);
-        mysqlx::SqlResult res;
 
         if (type == "MAMMIFERE") {
             Mammifere* mamm = static_cast<Mammifere*>(animal);
@@ -115,7 +114,7 @@ void AnimalDao::remove(Animal* animal) {
 
         mysqlx::Session* session = db->getSession();
 
-        mysqlx::SqlStatement req = session->sql("DELETE animal WHERE id = ?").bind(animal->getId());
+        mysqlx::SqlStatement req = session->sql("DELETE FROM animal WHERE id = ?").bind(animal->getId());
 
         mysqlx::SqlResult res = req.execute();
 

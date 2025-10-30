@@ -39,7 +39,7 @@ CREATE TABLE Animal (
     type_animal ENUM('MAMMIFERE', 'OISEAU', 'REPTILE') NOT NULL,
 
     typeFourrure VARCHAR(100) DEFAULT NULL,
-    envergure DOUBLE DEFAULT NULL,
+    envergure VARCHAR(100) DEFAULT NULL,
     estVenimeux BOOLEAN DEFAULT NULL,
 
     CONSTRAINT fk_animal_enclos FOREIGN KEY (id_enclos)
@@ -73,7 +73,7 @@ VALUES
 
 INSERT INTO Animal (nom, espece, age, poids, id_enclos, type_animal, envergure)
 VALUES
-('Coco', 'Perroquet', 2, 1.1, 2, 'OISEAU', 0.45);
+('Coco', 'Perroquet', 2, 1.1, 2, 'OISEAU', "45 cm");
 
 INSERT INTO Animal (nom, espece, age, poids, id_enclos, type_animal, estVenimeux)
 VALUES
