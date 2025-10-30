@@ -83,12 +83,43 @@ std::vector<Animal*> AnimalDao::getAll() {
 
 void AnimalDao::insert(Animal* animal) {
     try {
+
+        std::string type = animal->getType();
         mysqlx::Session* session = db->getSession();
-        // mysqlx::SqlStatement req = session->sql("INSERT INTO animal (id, nom, espece, age, poids, id_enclos, type_animal, typeFourrure, envergure, estVenimeux) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        // mysqlx::SqlResult res = req.bind().execute();
+        std::string query = "INSERT INTO animal (id, nom, espece, age, poids, id_enclos, type_animal, typeFourrure, envergure, estVenimeux) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        mysqlx::SqlStatement req = session->sql(query);
+        mysqlx::SqlResult res;
+
+        if (type == "MAMMIFERE") {
+            Mammifere* mamm = static_cast<Mammifere*>(animal);
+            req.bind(animal->getId(), animal->getNom(), animal->getEspece(), animal->getAge(), animal->getPoids(), animal->getIdEnclos(), animal->getType(), mamm->getTypeFourrure(), nullptr, nullptr);
+        } else if (type == "OISEAU") {
+            Oiseau* ois = static_cast<Oiseau*>(animal);
+            req.bind(animal->getId(), animal->getNom(), animal->getEspece(), animal->getAge(), animal->getPoids(), animal->getIdEnclos(), animal->getType(), nullptr, ois->getEnvergure(), nullptr);
+        } else if (type == "REPTILE") {
+            Reptile* rept = static_cast<Reptile*>(animal);
+            req.bind(animal->getId(), animal->getNom(), animal->getEspece(), animal->getAge(), animal->getPoids(), animal->getIdEnclos(), animal->getType(), nullptr, nullptr, rept->getIsVenomous());
+        } else {
+            req.bind(animal->getId(), animal->getNom(), animal->getEspece(), animal->getAge(), animal->getPoids(), animal->getIdEnclos(), nullptr, nullptr, nullptr, nullptr);
+        }
+
+        mysqlx::SqlResult res = req.execute();
 
     } catch (const std::exception& e) {
         std::cerr << "Erreur SQL : " << e.what() << std::endl;
     }
+}
 
+void AnimalDao::remove(Animal* animal) {
+    try {
+
+        mysqlx::Session* session = db->getSession();
+
+        mysqlx::SqlStatement req = session->sql("DELETE animal WHERE id = ?").bind(animal->getId());
+
+        mysqlx::SqlResult res = req.execute();
+
+    } catch (const std::exception& e) {
+        std::cerr << "Erreur SQL : " << e.what() << std::endl;
+    }
 }

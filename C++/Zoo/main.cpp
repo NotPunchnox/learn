@@ -9,7 +9,6 @@ int main(void)
 {
 
    std::cout << "Bienvenue dans le gestionnaire de Zoo !" << std::endl;
-
    DatabaseManager *db = new DatabaseManager("localhost", "root", "password", "zoo_db");
 
    // Connexion à la base de données
@@ -19,11 +18,12 @@ int main(void)
       return 1;
    }
 
+   // Récupérer les animeaux présents dans la db
    AnimalDao animalDao(db);
    std::vector<Animal*> listeAnimaux = animalDao.getAll();
 
+   // Afficher le nombre d'animaux et leurs informations
    std::cout << "Nombre d'animaux dans le Zoo : " << listeAnimaux.size() << std::endl;
-
    for (Animal* animal : listeAnimaux)
    {
       animal->afficherInfos();
@@ -40,7 +40,9 @@ int main(void)
    }
    listeAnimaux.clear();
 
+   // se déconnecter de la base de données et nettoyer la mémoire
    db->deconnecter();
    delete db;
+
    return 0;
 }
