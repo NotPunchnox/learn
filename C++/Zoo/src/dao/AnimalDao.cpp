@@ -72,8 +72,8 @@ std::vector<Animal> AnimalDao::getAll() {
 void AnimalDao::insert(Animal* animal) {
     try {
         mysqlx::Session* session = db->getSession();
-        mysqlx::SqlStatement req = session->sql("INSERT INTO animal (id, nom, espece, age, poids, id_enclos, type_animal, typeFourrure, envergure, estVenimeux) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        mysqlx::SqlResult res = req.bind().execute();
+        // mysqlx::SqlStatement req = session->sql("INSERT INTO animal (id, nom, espece, age, poids, id_enclos, type_animal, typeFourrure, envergure, estVenimeux) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        // mysqlx::SqlResult res = req.bind().execute();
 
     } catch (const std::exception& e) {
         std::cerr << "Erreur SQL : " << e.what() << std::endl;

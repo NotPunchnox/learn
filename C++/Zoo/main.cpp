@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include "include/dao/AnimalDao.hpp"
+#include "include/models/Mammifere.hpp"
 #include "include/utils/DatabaseManager.hpp"
 
 int main(void)
@@ -27,6 +28,10 @@ int main(void)
    {
       animal.afficherInfos();
    }
+
+   // Déclaration d'un mammifère
+   Mammifere lion(0, "Simba", "Lion", 5, 190.5, 1, "Court");
+   animalDao.insert(&lion);
 
    db->deconnecter();
    delete db;
