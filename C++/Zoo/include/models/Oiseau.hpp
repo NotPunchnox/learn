@@ -20,6 +20,7 @@ public:
 
     // Méthodes
     void emettreSon() const override;
+    std::string Oiseau::getType() const { return "OISEAU"; }
 
 private:
     std::string envergure;

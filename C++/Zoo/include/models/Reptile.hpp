@@ -20,6 +20,7 @@ public:
 
     // Méthodes
     void emettreSon() const override;
+    std::string Reptile::getType() const { return "REPTILE"; }
 
 private:
     bool estVenimeux;

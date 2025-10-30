@@ -20,18 +20,25 @@ int main(void)
    }
 
    AnimalDao animalDao(db);
-   std::vector<Animal> listeAnimaux = animalDao.getAll();
+   std::vector<Animal*> listeAnimaux = animalDao.getAll();
 
    std::cout << "Nombre d'animaux dans le Zoo : " << listeAnimaux.size() << std::endl;
 
-   for (Animal animal : listeAnimaux)
+   for (Animal* animal : listeAnimaux)
    {
-      animal.afficherInfos();
+      animal->afficherInfos();
    }
 
    // Déclaration d'un mammifère
    Mammifere lion(0, "Simba", "Lion", 5, 190.5, 1, "Court");
    animalDao.insert(&lion);
+   std::cout << "Type animal: " << lion.getType() << std::endl;
+
+   // Nettoyage de la mémoire
+   for (Animal* animal : listeAnimaux) {
+      delete animal;
+   }
+   listeAnimaux.clear();
 
    db->deconnecter();
    delete db;

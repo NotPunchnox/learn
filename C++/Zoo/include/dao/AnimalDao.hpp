@@ -9,7 +9,7 @@ public:
     AnimalDao(DatabaseManager* db);
 
     // Méthodes CRUD (create, read, update, delete)
-    std::vector<Animal> getAll();
+    std::vector<Animal*> getAll();
     void insert(Animal*);
     void update(Animal*);
     void remove(Animal*);

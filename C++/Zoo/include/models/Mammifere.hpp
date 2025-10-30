@@ -20,6 +20,7 @@ public:
 
     // Méthodes
     void emettreSon() const override;
+    std::string Mammifere::getType() const { return "MAMMIFERE"; }
 
 private:
     std::string typeFourrure;

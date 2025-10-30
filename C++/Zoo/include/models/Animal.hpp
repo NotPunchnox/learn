@@ -30,6 +30,7 @@ public:
     virtual void afficherInfos() const;
     virtual void nourrir() const;
     virtual void emettreSon() const;
+    virtual std::string getType() const = 0;
 
 protected:
     int id{0};

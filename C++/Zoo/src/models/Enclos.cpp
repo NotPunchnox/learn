@@ -8,6 +8,11 @@ Enclos::Enclos() : id(0), type(""), taille(0.0), capacite(0), animaux() {};
 Enclos::Enclos(int id, const std::string &type, double taille, int capacite)
     : id(id), type(type), taille(taille), capacite(capacite), animaux() {};
 
+// Destructeur
+Enclos::~Enclos() {
+    nettoyerAnimaux();
+}
+
 // Getters
 int Enclos::getID() const {
     return id;
@@ -21,7 +26,7 @@ double Enclos::getTaille() const {
 int Enclos::getCapacite() const {
     return capacite;
 }
-const std::vector<Animal>& Enclos::getAnimaux() const {
+const std::vector<Animal*>& Enclos::getAnimaux() const {
     return animaux;
 }
 
@@ -39,13 +44,10 @@ void Enclos::setTaille(double taille) {
 void Enclos::setCapacite(int capacite) {
     this->capacite = capacite;
 }
-void Enclos::setAnimaux(const std::vector<Animal> animaux) {
-    this->animaux = animaux;
-}
 
 
 // Méthodes
-void Enclos::ajouterAnimal(const Animal animal) {
+void Enclos::ajouterAnimal(Animal* animal) {
     animaux.push_back(animal);
 }
 
@@ -53,11 +55,18 @@ void Enclos::afficherAnimaux() const {
     std::cout << "Liste des Animaux présent dans l'Enclos : " << getID() << "\n"
               << "=====================================================" << std::endl;
 
-    for (Animal a : animaux) {
-        std::cout << "Nom: " << a.getNom() << std::endl;
+    for (Animal* a : animaux) {
+        std::cout << "Nom: " << a->getNom() << std::endl;
     }
 }
 
 int Enclos::getNbAnimaux() const {
     return animaux.size();
+}
+
+void Enclos::nettoyerAnimaux() {
+    for (Animal* a : animaux) {
+        delete a;
+    }
+    animaux.clear();
 }
