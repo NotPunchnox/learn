@@ -4,6 +4,7 @@
 #include "include/dao/AnimalDao.hpp"
 #include "include/models/Mammifere.hpp"
 #include "include/utils/DatabaseManager.hpp"
+#include "include/dao/EmployeDao.hpp"
 
 int main(void)
 {
@@ -18,7 +19,7 @@ int main(void)
       return 1;
    }
 
-   // Récupérer les animeaux présents dans la db
+   /* Test Class AnimalDao */
    AnimalDao animalDao(db);
    std::vector<Animal*> listeAnimaux = animalDao.getAll();
 
@@ -39,6 +40,16 @@ int main(void)
       delete animal;
    }
    listeAnimaux.clear();
+
+
+   /* Test Class EmployeDao */
+   EmployeDao employeDao(db);
+   std::vector<Employe> listeEmployes = employeDao.getAll();
+   
+   // boucle pour afficher l'intégralité des employés présent dans la db
+   for (Employe empl : listeEmployes) {
+      empl.afficherInfos();
+   }
 
    // se déconnecter de la base de données et nettoyer la mémoire
    db->deconnecter();

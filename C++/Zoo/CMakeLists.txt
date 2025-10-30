@@ -47,6 +47,7 @@ add_executable(ZOO
     src/models/Zoo.cpp
     src/utils/DatabaseManager.cpp
     src/dao/AnimalDao.cpp
+    src/dao/EmployeDao.cpp
 )
 
 # Inclusion des répertoires d'en-têtes

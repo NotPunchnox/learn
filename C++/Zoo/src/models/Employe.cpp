@@ -48,6 +48,6 @@ void Employe::afficherInfos() const {
               << "ID: "        << getID()             << "\n"
               << "Nom: "       << getNom()            << "\n"
               << "Poste: "     << getPoste()          << "\n"
-              << "Salaire: "   << getSalaire() * 1000 << "\n"
+              << "Salaire: "   << getSalaire()        << "\n"
               << "ID Enclos: " << getIDEnclos()       << std::endl;
 }
