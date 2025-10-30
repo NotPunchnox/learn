@@ -51,6 +51,10 @@ int main(void)
       empl.afficherInfos();
    }
 
+   // Création d'un nouvel employé pour tester: fonctionnel
+   // Employe nouvelEmpl = Employe(0, "Samuel", "développeur", 2200, 1);
+   // employeDao.insert(nouvelEmpl);
+
    // se déconnecter de la base de données et nettoyer la mémoire
    db->deconnecter();
    delete db;

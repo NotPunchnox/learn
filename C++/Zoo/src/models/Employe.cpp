@@ -45,9 +45,9 @@ void Employe::setIDEnclos(int id_enclos) {
 // méthodes
 void Employe::afficherInfos() const {
     std::cout << "============= Informations Employé =============\n" 
-              << "ID: "        << getID()             << "\n"
-              << "Nom: "       << getNom()            << "\n"
-              << "Poste: "     << getPoste()          << "\n"
-              << "Salaire: "   << getSalaire()        << "\n"
-              << "ID Enclos: " << getIDEnclos()       << std::endl;
+              << "ID: "        << getID()        << "\n"
+              << "Nom: "       << getNom()       << "\n"
+              << "Poste: "     << getPoste()     << "\n"
+              << "Salaire: "   << getSalaire()   << "\n"
+              << "ID Enclos: " << getIDEnclos()  << std::endl;
 }

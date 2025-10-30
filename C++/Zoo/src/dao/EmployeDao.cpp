@@ -35,3 +35,23 @@ std::vector<Employe> EmployeDao::getAll() {
     return result;
     
 }
+
+
+void EmployeDao::insert(Employe& empl) {
+
+    try {
+        std::string query = "INSERT INTO employe (id, nom, poste, salaire, id_enclos) VALUES (?, ?, ?, ?, ?)";
+        
+        mysqlx::Session* session = db->getSession();
+        mysqlx::SqlStatement req = session->sql(query);
+        req.bind(empl.getID(), empl.getNom(), empl.getPoste(), empl.getSalaire(), empl.getIDEnclos());
+
+        mysqlx::SqlResult res = req.execute();
+
+    } catch (std::exception& e) {
+        std::cerr << "Erreur SQL (EmployeDao) : " << e.what() << std::endl;
+    } catch (std::string& e) {
+        std::cerr << "Erreur (EmployeDao) : " << e << std::endl;
+    }
+
+}
