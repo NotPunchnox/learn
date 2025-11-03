@@ -5,6 +5,7 @@
 #include "include/models/Mammifere.hpp"
 #include "include/utils/DatabaseManager.hpp"
 #include "include/dao/EmployeDao.hpp"
+#include "include/vue/afficher.hpp"
 
 int main(void)
 {
@@ -19,7 +20,9 @@ int main(void)
       return 1;
    }
 
-   /* Test Class AnimalDao */
+
+   /*
+
    AnimalDao animalDao(db);
    std::vector<Animal*> listeAnimaux = animalDao.getAll();
 
@@ -42,7 +45,7 @@ int main(void)
    listeAnimaux.clear();
 
 
-   /* Test Class EmployeDao */
+
    EmployeDao employeDao(db);
    std::vector<Employe> listeEmployes = employeDao.getAll();
    
@@ -50,7 +53,7 @@ int main(void)
    for (Employe empl : listeEmployes) {
       empl.afficherInfos();
    }
-
+  */
    // Création d'un nouvel employé pour tester: fonctionnel
    // Employe nouvelEmpl = Employe(0, "Samuel", "développeur", 2200, 1);
    // employeDao.insert(nouvelEmpl);

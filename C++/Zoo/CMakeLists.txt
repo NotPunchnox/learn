@@ -33,6 +33,19 @@ if(WIN32)
         message(FATAL_ERROR "MySQL Connector C++ not found at ${MYSQL_INC}")
     endif()
 
+else ()
+  set(MYSQL_CONNECTOR_PATH "~/Documents/C++/mysql-connector-c++-9.5.0-linux-glibc2.28-x86-64bit")
+  set(MYSQL_INC "${MYSQL_CONNECTOR_PATH}/include")
+  set(MYSQL_LIB "${MYSQL_CONNECTOR_PATH}/lib64")
+
+  if(EXISTS "${MYSQL_INC}")
+        include_directories("${MYSQL_INC}")
+        if(EXISTS "${MYSQL_LIB}")
+            link_directories("${MYSQL_LIB}")
+        endif()
+    else()
+        message(FATAL_ERROR "MySQL Connector C++ not found at ${MYSQL_INC}")
+    endif()
 endif()
 
 # Ajout des fichiers sources
@@ -48,6 +61,7 @@ add_executable(ZOO
     src/utils/DatabaseManager.cpp
     src/dao/AnimalDao.cpp
     src/dao/EmployeDao.cpp
+    src/vue/Afficher.cpp
 )
 
 # Inclusion des répertoires d'en-têtes
