@@ -22,3 +22,7 @@ void Mammifere::setTypeFourrure(const std::string& nouvelleFourrure) {
 void Mammifere::emettreSon() const {
     std::cout << "Le mammifère " << getNom() << " Grogne..." << std::endl;
 }
+
+std::string Mammifere::getType() const {
+  return "MAMMIFERE";
+}

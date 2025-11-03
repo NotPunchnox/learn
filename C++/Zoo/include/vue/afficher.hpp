@@ -5,7 +5,7 @@ class Afficher {
 public:
   // Constructeur
   Afficher();
-  Afficher(const std::string color);
+
 
   // Destructeur
   virtual ~Afficher() = default;
@@ -20,6 +20,8 @@ public:
   // Méthodes
   void menu() const;
 
+
 private:
   std::string color;
-}
+
+};

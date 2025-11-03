@@ -18,3 +18,7 @@ void Reptile::setIsVenomous(bool estVenimeux) {
 void Reptile::emettreSon() const {
     std::cout << "le serpent " << getNom() << " siffle..." << std::endl;
 }
+
+std::string Reptile::getType() const {
+  return "REPTILE";
+}

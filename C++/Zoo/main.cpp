@@ -10,6 +10,9 @@
 int main(void)
 {
 
+   Afficher *afficher;
+   afficher->menu();
+
    std::cout << "Bienvenue dans le gestionnaire de Zoo !" << std::endl;
    DatabaseManager *db = new DatabaseManager("localhost", "root", "password", "zoo_db");
 
@@ -19,7 +22,6 @@ int main(void)
       delete db;
       return 1;
    }
-
 
    /*
 

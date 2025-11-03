@@ -17,3 +17,7 @@ void Oiseau::setEnvergure(const std::string &envergure) {
 void Oiseau::emettreSon() const {
     std::cout << "L'oiseau " << getNom() << "chante" << std::endl;
 }
+
+std::string Oiseau::getType() const {
+  return "OISEAU";
+}

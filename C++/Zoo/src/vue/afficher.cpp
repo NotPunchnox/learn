@@ -1,16 +1,13 @@
 #include <iostream>
-#include "../../include/vue/afficher.cpp"
+#include "../../include/vue/afficher.hpp"
 
 
 // Constructeur
-Afficher::Afficher();
-
-Afficher::Afficher(const std::string color) :
-  color(color) {};
+Afficher::Afficher() : color("") {};
 
 
 // Getters
-const std::string Afficher::getColor() {
+const std::string Afficher::getColor() const {
   return color;
 }
 
@@ -21,10 +18,10 @@ void Afficher::setColor(const std::string color) {
 
 
 // Méthodes
-void Afficher::menu() {
-  std::cout << "===================================="
-            << "1. Animaux (afficher, modifier, supprimer...)"
-            << "2. Employé (afficher, ajouter..)"
-            << "3. Enclos (afficher, modifier, supprimer...)"
+void Afficher::menu() const {
+  std::cout << "=============================================\n"
+            << "1. Animaux (afficher, modifier, supprimer...)\n"
+            << "2. Employé (afficher, ajouter..)             \n"
+            << "3. Enclos (afficher, modifier, supprimer...) \n"
             << std::endl;
 }
