@@ -12,7 +12,7 @@ using namespace std;
 int main(void)
 {
    cout << "Bienvenue dans le gestionnaire de Zoo !" << endl;
-   DatabaseManager *db = new DatabaseManager("localhost", "admin", "password", "zoo_db");
+   DatabaseManager *db = new DatabaseManager("localhost", "admin", "password", "zoo_db", 3306);
 
    // Connexion à la base de données
    if (!db->connecter()) {

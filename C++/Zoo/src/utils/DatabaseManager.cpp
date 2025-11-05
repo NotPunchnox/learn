@@ -18,13 +18,13 @@ bool DatabaseManager::connecter() {
         // Création d’une session MySQL
         session = std::make_unique<mysqlx::Session>(host, port, user, password);
         session->sql("USE " + database).execute();
-        std::cout << "✅ Connexion MySQL réussie !" << std::endl;
+        std::cout << "Connexion MySQL réussie !" << std::endl;
         return true;
     } catch (const mysqlx::Error &err) {
-        std::cerr << "❌ Erreur MySQL : " << err.what() << std::endl;
+        std::cerr << "/!\\ Erreur MySQL : " << err.what() << std::endl;
         return false;
     } catch (std::exception &ex) {
-        std::cerr << "❌ Exception : " << ex.what() << std::endl;
+        std::cerr << "/!\\ Exception : " << ex.what() << std::endl;
         return false;
     }
 }
@@ -32,7 +32,7 @@ bool DatabaseManager::connecter() {
 void DatabaseManager::deconnecter() {
     if (session) {
         session->close();
-        std::cout << "🔒 Connexion MySQL fermée." << std::endl;
+        std::cout << "Connexion MySQL fermée." << std::endl;
     }
 }
 
