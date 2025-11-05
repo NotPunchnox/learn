@@ -50,13 +50,13 @@ void Animal::setIdEnclos(int id_enclos) {
 
 // Méthodes virtuelles
 void Animal::afficherInfos() const {
-    std::cout << "ID: "      << id        << "\n"
-              << "Nom: "     << nom       << "\n"
-              << "Espèce: "  << espece    << "\n"
-              << "Age: "     << age       << "\n"
-              << "Poids: "   << poids     << "\n"
-              << "ID Enclos: "<< id_enclos << "\n"
-              << std::endl;
+    std::cout << "ID: "        << id        << "\n"
+              << "Nom: "       << nom       << "\n"
+              << "Espèce: "    << espece    << "\n"
+              << "Age: "       << age       << "\n"
+              << "Poids: "     << poids     << "\n"
+              << "ID Enclos: " << id_enclos << "\n"
+              <<  std::endl;
 }
 
 void Animal::nourrir() const {

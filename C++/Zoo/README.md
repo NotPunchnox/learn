@@ -1,15 +1,8 @@
 L'objectif de cette mini application est de simuler un Zoo ( oui c'est assez abstrait dit comme ça )
 Il sert juste à me remettre dans la programmation orienté Objet en cpp
 
-
-
-
-
-
-
-
-
 Diagramme UML:
+
 ```uml
 Simulation de Zoo
 
@@ -132,3 +125,73 @@ DatabaseManager <.. AnimalDAO
 DatabaseManager <.. EnclosDAO
 DatabaseManager <.. EmployeDAO
 ```
+
+Organisation des vues:
+
+```
+/vue
+ ├── MenuPrincipalView.h / .cpp
+ ├── AnimalView.h / .cpp
+ ├── EnclosView.h / .cpp
+ ├── EmployeView.h / .cpp
+ └── ZooView.h / .cpp
+```
+
+Menu Principal:
+
+```
+=== MENU PRINCIPAL ===
+1. Gérer les animaux
+2. Gérer les enclos
+3. Gérer les employés
+4. Simuler une journée
+5. Quitter
+```
+
+Menu Animal:
+
+```
+=== GESTION DES ANIMAUX ===
+1. Afficher tous les animaux
+2. Ajouter un animal
+3. Modifier un animal
+4. Supprimer un animal
+5. Retour au menu principal
+```
+
+Menu Enclos:
+
+```
+=== GESTION DES ENCLOS ===
+1. Afficher les enclos
+2. Créer un nouvel enclos
+3. Voir les animaux d’un enclos
+4. Supprimer un enclos
+5. Retour
+```
+
+Menu Employé:
+
+```
+=== GESTION DES ENCLOS ===
+1. Afficher les enclos
+2. Créer un nouvel enclos
+3. Voir les animaux d’un enclos
+4. Supprimer un enclos
+5. Retour
+```
+
+Menu Zoo:
+
+```
+exemple d'affichage:
+=== ÉTAT ACTUEL DU ZOO ===
+Nombre d’enclos : 5
+Nombre total d’animaux : 27
+Nombre d’employés : 8
+
+Enclos #1 : Savane (4 animaux)
+Enclos #2 : Volière (5 oiseaux)
+...
+```
+

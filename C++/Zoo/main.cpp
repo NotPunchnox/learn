@@ -7,21 +7,29 @@
 #include "include/dao/EmployeDao.hpp"
 #include "include/vue/afficher.hpp"
 
+using namespace std;
+
 int main(void)
 {
+   cout << "Bienvenue dans le gestionnaire de Zoo !" << endl;
+   DatabaseManager *db = new DatabaseManager("localhost", "admin", "password", "zoo_db");
+
+   // Connexion à la base de données
+   if (!db->connecter()) {
+      cerr << "Échec de la connexion à la base de données." << endl;
+      delete db;
+      return 1;
+   }
+
 
    Afficher *afficher;
    afficher->menu();
 
-   std::cout << "Bienvenue dans le gestionnaire de Zoo !" << std::endl;
-   DatabaseManager *db = new DatabaseManager("localhost", "root", "password", "zoo_db");
 
-   // Connexion à la base de données
-   if (!db->connecter()) {
-      std::cerr << "Échec de la connexion à la base de données." << std::endl;
-      delete db;
-      return 1;
-   }
+   int choice;
+   cin >> choice;
+
+   cout << "Votre choix: " << choice << endl;
 
    /*
 
