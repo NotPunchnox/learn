@@ -39,8 +39,8 @@ void Afficher::menu() {
   switch (choix) {
     case 1: {
       std::cout << "Gérer les animaux sélectionné." << std::endl;
-      AfficherAnimal *afficherAnimal = new AfficherAnimal(db);
-      afficherAnimal->menu();
+      afficherAnimal afficherAnimal(db);
+      afficherAnimal.menu();
       break;
     }
 
