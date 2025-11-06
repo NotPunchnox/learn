@@ -12,7 +12,7 @@ public:
     std::vector<Animal*> getAll();
     void insert(Animal*);
     void update(Animal*);
-    void remove(Animal*);
+    void remove(int id_animal);
 
 private:
     DatabaseManager* db;

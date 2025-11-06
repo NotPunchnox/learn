@@ -135,7 +135,7 @@ void AnimalDao::remove(int id_animal) {
         int count = static_cast<int>(row[0]);
 
         if (count < 1) {
-            throw std::string("L'animal avec l'ID " + std::to_string(id_animal + " n'existe pas !");
+            throw std::string("L'animal avec l'ID " + std::to_string(id_animal) + " n'existe pas !");
         }
 
         mysqlx::SqlStatement req = session->sql("DELETE FROM animal WHERE id = ?").bind(id_animal);

@@ -37,15 +37,27 @@ void afficherAnimal::menu() const {
   switch (choix) {
     
     case 1:
+      std::string type;
       std::string nom;
       std::string espece;
-      int age;
+      std::string typeFourrure;
+      std::string envergure;
+      std::string estVenimeux;
       double poids;
+      int age;
       int id_enclos;
 
 
-      std::cout << "Ajouter un animal sélectionné." << std::endl;
       std::cout << "Veuillez entrer les informations de l'animal à ajouter." << std::endl;
+      
+      // Récupérer le type
+      std::cout << "==== Choix du type de l'animal ====\n"
+                << "1. Mammifère  \n"
+                << "2. Oiseau     \n"
+                << "3. Réptile    \n"
+                << "Votre choix : ";
+      std::cin >> type;
+
       std:: cout << "Nom: ";
       std::cin >> nom;
       std::cout << "Espèce: ";
