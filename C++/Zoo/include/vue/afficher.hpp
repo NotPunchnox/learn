@@ -1,10 +1,11 @@
 #include <iostream>
+#include "../utils/DatabaseManager.hpp"
 
 class Afficher {
 
 public:
   // Constructeur
-  Afficher();
+  Afficher(DatabaseManager *db);
 
 
   // Destructeur
@@ -18,10 +19,10 @@ public:
   void setColor(const std::string color);
 
   // Méthodes
-  void menu() const;
+  void menu();
 
 
 private:
   std::string color;
-
+  DatabaseManager *db;
 };

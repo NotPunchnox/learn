@@ -1,9 +1,11 @@
 #include <iostream>
 #include "../../include/vue/afficher.hpp"
-
+#include "../../include/utils/DatabaseManager.hpp"
+#include "../../include/vue/afficherAnimal.hpp"
 
 // Constructeur
-Afficher::Afficher() : color("") {};
+Afficher::Afficher(DatabaseManager *db)
+  : db(db), color("") {};
 
 
 // Getters
@@ -18,7 +20,7 @@ void Afficher::setColor(const std::string color) {
 
 
 // Méthodes
-void Afficher::menu() const {
+void Afficher::menu() {
   
   int choix;
 
@@ -35,19 +37,28 @@ void Afficher::menu() const {
 
   // Traiter le choix de l'utilisateur
   switch (choix) {
-    case 1:
+    case 1: {
       std::cout << "Gérer les animaux sélectionné." << std::endl;
+      AfficherAnimal *afficherAnimal = new AfficherAnimal(db);
+      afficherAnimal->menu();
       break;
-    case 2:
+    }
+
+    case 2: {
       std::cout << "Gérer les enclos sélectionné." << std::endl;
       break;
-    case 4:
+    }
+
+    case 4: {
       std::cout << "Simuler une journée sélectionné." << std::endl;
       break;
+    }
+
     case 5:
       std::cout << "Quitter sélectionné." << std::endl;
       exit(0);
       break;
+
     default:
       std::cout << "Choix invalide. Veuillez réessayer." << std::endl;
       system("clear");

@@ -23,16 +23,10 @@ int main(void)
    }*/
 
 
-   Afficher *afficher;
+   Afficher *afficher = new Afficher(db);
    afficher->menu();
 
-
-   int choice;
-   cin >> choice;
-
-   cout << "Votre choix: " << choice << endl;
-
-   /*
+  /*
 
    AnimalDao animalDao(db);
    std::vector<Animal*> listeAnimaux = animalDao.getAll();

@@ -6,7 +6,7 @@ class AnimalDao {
 
 public:
     // Constructeur
-    AnimalDao(DatabaseManager* db);
+    AnimalDao(DatabaseManager *db);
 
     // Méthodes CRUD (create, read, update, delete)
     std::vector<Animal*> getAll();
@@ -15,5 +15,5 @@ public:
     void remove(int id_animal);
 
 private:
-    DatabaseManager* db;
+    DatabaseManager *db;
 };

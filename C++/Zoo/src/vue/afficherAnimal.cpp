@@ -2,10 +2,16 @@
 #include "../../include/vue/afficherAnimal.hpp"
 #include "../../include/vue/afficher.hpp"
 #include "../../include/dao/AnimalDao.hpp"
+#include "../../include/models/Mammifere.hpp"
+#include "../../include/models/Oiseau.hpp"
+#include "../../include/models/Reptile.hpp"
 
 // Constructeur
-afficherAnimal::afficherAnimal() : color("default") {};
-afficherAnimal::afficherAnimal(std::string color) : color(color) {};
+afficherAnimal::afficherAnimal(DatabaseManager *db)
+  : db(db), color("default") {};
+
+afficherAnimal::afficherAnimal(DatabaseManager *db, std::string color)
+  : db(db), color(color) {};
 
 // Getters
 std::string afficherAnimal::getColor() const {
@@ -18,7 +24,7 @@ void afficherAnimal::setColor(const std::string& color) {
 }
 
 // Méthodes
-void afficherAnimal::menu() const {
+void afficherAnimal::menu() {
   int choix;
 
   // Afficher le menu des animaux
@@ -32,21 +38,25 @@ void afficherAnimal::menu() const {
   // Récupérer le choix de l'utilisateur
   std::cout << "Veuillez entrer votre choix: ";
   std::cin >> choix;
- 
+
+  AnimalDao animalDao(db);
+
   // Traiter le choix de l'utilisateur
   switch (choix) {
     
-    case 1:
-      std::string type;
+    case 1: {
+      Animal* nouvelAnimal;
+      std::string typeString;
       std::string nom;
       std::string espece;
-      std::string typeFourrure;
-      std::string envergure;
-      std::string estVenimeux;
+      std::string typeFourrure = "";
+      std::string envergure = "";
+      std::string estVenimeuxString = "";
       double poids;
+      bool estVenimeux;
       int age;
       int id_enclos;
-
+      int type;
 
       std::cout << "Veuillez entrer les informations de l'animal à ajouter." << std::endl;
       
@@ -69,44 +79,78 @@ void afficherAnimal::menu() const {
       std::cout << "ID Enclos: ";
       std::cin >> id_enclos;
 
-      Animal nouvelAnimal(0, nom, espece, age, poids, id_enclos);
-      //Animal *nouvelAnimal = new Animal(0, nom, espece, age, poids, id_enclos);
-      //AnimalDao animalDao;
-      animalDao.insert(nouvelAnimal);
+      switch (type) {
+        case 1: {
+          typeString = "MAMMIFERE";
+          std::cout << "Type de fourrure : ";
+          std::cin  >> typeFourrure;
+          
+          Mammifere m(0, nom, espece, age, poids, id_enclos, typeFourrure);
+
+          animalDao.insert(&m);
+          break;
+        }
+        case 2: {
+          typeString = "OSIEAU";
+          std::cout << "Envergure (cm): ";
+          std::cin >> envergure;
+          break;
+        }
+        case 3: {
+          typeString = "REPTILE";
+          std::cout << "est vénimeux (o/n) :";
+          std::cin >> estVenimeuxString;
+          if (estVenimeuxString == "o") {
+            estVenimeux = true;
+          } else {
+            estVenimeux = false;
+          }
+          break;
+        }
+
+        default:
+          std::cout << "Type invalide. Retour au menu des animaux." << std::endl;
+          this->menu();
+          return;
+      };
 
       system("clear");
       std::cout << "L'Animal " << nom << "ajouté avec succès !" << std::endl;
       
       this->menu();
       break;
-    
-    case 2:
+    }
+
+    case 2: {
       std::cout << "Supprimer un animal sélectionné.";
       int idASupprimer;
       std::cout << "Veuillez entrer l'ID de l'animal à supprimer: ";
       std::cin >> idASupprimer;
 
-      AnimalDao animalDaoSuppr;
-      animalDaoSuppr.remove(idASupprimer);
+      AnimalDao *animalDaoSuppr = new AnimalDao(db);
+      animalDaoSuppr->remove(idASupprimer);
       
       system("clear");
       std::cout << "L'Animal avec l'ID " << idASupprimer << " a été supprimé avec succès !" << std::endl;
 
       this->menu();
       break;
-    
-    case 3:
+    }
+
+    case 3: {
       std::cout << "Afficher les animaux sélectionné.";
       break;
+    }
 
-    case 4:
+    case 4: {
       system("clear");
       std::cout << "Retour au menu principal sélectionné.";
       
-      afficher *afficher;
+      Afficher *afficher = new Afficher(db);
       afficher->menu();
 
       break;
+    }
 
     default:
       std::cout << "Choix invalide. Veuillez réessayer." << std::endl;
