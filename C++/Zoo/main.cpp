@@ -15,11 +15,12 @@ int main(void)
    DatabaseManager *db = new DatabaseManager("localhost", "admin", "password", "zoo_db", 3306);
 
    // Connexion à la base de données
-   if (!db->connecter()) {
+
+  /*if (!db->connecter()) {
       cerr << "Échec de la connexion à la base de données." << endl;
       delete db;
       return 1;
-   }
+   }*/
 
 
    Afficher *afficher;

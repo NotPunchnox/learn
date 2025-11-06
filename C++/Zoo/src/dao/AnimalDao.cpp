@@ -124,13 +124,21 @@ void AnimalDao::update(Animal* animal) {
     }
 }
 
-void AnimalDao::remove(Animal* animal) {
+void AnimalDao::remove(int id_animal) {
     try {
 
         mysqlx::Session* session = db->getSession();
+    
+        mysqlx::SqlStatement check = session->sql("SELECT COUNT(*) FROM animal WHERE id = ?").bind(id_animal);
+        mysqlx::SqlResult checkRes = check.execute();
+        mysqlx::Row row = checkRes.fetchOne();
+        int count = static_cast<int>(row[0]);
 
-        mysqlx::SqlStatement req = session->sql("DELETE FROM animal WHERE id = ?").bind(animal->getId());
+        if (count < 1) {
+            throw std::string("L'animal avec l'ID " + std::to_string(id_animal + " n'existe pas !");
+        }
 
+        mysqlx::SqlStatement req = session->sql("DELETE FROM animal WHERE id = ?").bind(id_animal);
         mysqlx::SqlResult res = req.execute();
 
     } catch (const std::exception& e) {

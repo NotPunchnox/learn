@@ -63,6 +63,7 @@ add_executable(ZOO
     src/dao/AnimalDao.cpp
     src/dao/EmployeDao.cpp
     src/vue/afficher.cpp
+    src/vue/afficherAnimal.cpp
 )
 
 # Inclusion des répertoires d'en-têtes
