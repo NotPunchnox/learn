@@ -16,11 +16,11 @@ int main(void)
 
    // Connexion à la base de données
 
-  /*if (!db->connecter()) {
+  if (!db->connecter()) {
       cerr << "Échec de la connexion à la base de données." << endl;
       delete db;
       return 1;
-   }*/
+  }
 
 
    Afficher *afficher = new Afficher(db);
