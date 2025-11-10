@@ -62,6 +62,7 @@ add_executable(ZOO
     src/utils/DatabaseManager.cpp
     src/dao/AnimalDao.cpp
     src/dao/EmployeDao.cpp
+    src/dao/EnclosDao.cpp
     src/vue/afficher.cpp
     src/vue/afficherAnimal.cpp
 )

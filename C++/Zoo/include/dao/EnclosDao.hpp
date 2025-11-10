@@ -11,6 +11,7 @@ public:
     // Méthodes
     std::vector<Enclos> getAll();
     void insert(Enclos&);
+    void afficherEnclos() const;
 
 private:
     DatabaseManager* db;

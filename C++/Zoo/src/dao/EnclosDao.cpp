@@ -37,3 +37,19 @@ std::vector<Enclos> EnclosDao::getAll() {
   return listeEnclos;
 
 }
+
+void afficherEnclos() const {
+
+  std::vector listeEnclos = this->getAll();
+
+  std::cout << "==== Nombre d'enclos : " << listeEnclos.size() << std::endl;
+
+  for (Enclos en : listeEnclos) {
+    std::cout << "Enclos   : " << en.getId() << "\n"
+              << "type     : " << en.getType() << "\n"
+              << "taille   : " << en.getTaille() << "\n"
+              << "Capacite : " << en.getCapacite() << "\n"
+              << std::endl;
+  }
+
+}
