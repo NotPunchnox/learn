@@ -3,7 +3,7 @@
 #include <mysqlx/xdevapi.h>
 #include "../../include/dao/EnclosDao.hpp"
 #include "../../include/utils/DatabaseManager.hpp"
-#include "../../include/dao/EnclosDao.hpp"
+
 
 // Constructeur
 EnclosDao::EnclosDao(DatabaseManager* db) : db(db) {};
@@ -38,14 +38,15 @@ std::vector<Enclos> EnclosDao::getAll() {
 
 }
 
-void afficherEnclos() const {
+void EnclosDao::afficherEnclos() {
 
-  std::vector listeEnclos = this->getAll();
+  std::vector<Enclos> listeEnclos = this->getAll();
+
 
   std::cout << "==== Nombre d'enclos : " << listeEnclos.size() << std::endl;
 
   for (Enclos en : listeEnclos) {
-    std::cout << "Enclos   : " << en.getId() << "\n"
+    std::cout << "Enclos   : " << en.getID() << "\n"
               << "type     : " << en.getType() << "\n"
               << "taille   : " << en.getTaille() << "\n"
               << "Capacite : " << en.getCapacite() << "\n"

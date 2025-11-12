@@ -27,7 +27,7 @@ public:
 
     // Méthodes
     void ajouterAnimal(Animal* animal);
-    void afficherAnimaux() const;
+    void afficherAnimaux();
     int getNbAnimaux() const;
     void nettoyerAnimaux();
 

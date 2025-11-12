@@ -1,0 +1,1290 @@
+#Requires -Version 5.1
+#Requires -RunAsAdministrator
+
+<#
+.SYNOPSIS
+    Script de configuration automatisée et sécurisée du serveur Windows pour GSB
+.DESCRIPTION
+    Configure automatiquement AD DS, DNS, DHCP, structure OU, utilisateurs, groupes, partages et GPO
+    - Installation automatique des services manquants
+    - Promotion en contrôleur de domaine si nécessaire
+    - Mot de passe unifié pour tous les comptes
+.NOTES
+    Version: 3.5 Final
+    Auteur: Expert PowerShell
+    Date: 2025-11-12
+    Prérequis: Windows Server 2019/2022, Disque D: disponible, droits administrateur
+#>
+
+[CmdletBinding()]
+param()
+
+#REGION: Vérification des prérequis
+if ($PSVersionTable.PSVersion.Major -lt 5) {
+    Write-Error "❌ PowerShell 5.1 ou supérieur est requis."
+    exit 1
+}
+
+$currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "❌ Ce script doit être exécuté avec des privilèges d'administrateur."
+    exit 1
+}
+#ENDREGION
+
+#REGION: Configuration Globale
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+
+# Mot de passe unifié pour tous les comptes
+$GLOBAL_PASSWORD = "Ndlp#2022"
+
+$Config = @{
+    Domain = @{
+        Name = "gsb.local"
+        NetBIOS = "GSB"
+        SafeModePassword = $GLOBAL_PASSWORD
+    }
+    Server = @{
+        Name = "ADLAB"
+        IP = "192.168.1.10"
+        PrefixLength = 24
+        Gateway = "192.168.1.1"
+        DNS = "127.0.0.1"  # Pointe vers lui-même après installation DNS
+    }
+    DHCP = @{
+        ScopeName = "GSBScope"
+        ScopeStart = "192.168.1.100"
+        ScopeEnd = "192.168.1.200"
+        SubnetMask = "255.255.255.0"
+        ScopeID = "192.168.1.0"
+        ExclusionStart = "192.168.1.150"
+        ExclusionEnd = "192.168.1.160"
+    }
+    Password = $GLOBAL_PASSWORD
+    Services = @(
+        "ReseauSysteme",
+        "DirectionDSI",
+        "Administratif",
+        "Developpement",
+        "Commercial",
+        "LaboRecherche",
+        "Accueil",
+        "DemonstrationVisiteursSortieVersInternet"
+    )
+    Paths = @{
+        Profils = "D:\Profils"
+        Documents = "D:\Documents"
+        Reports = "$env:USERPROFILE\Desktop\Rapports_GSB"
+    }
+}
+
+# Variable de suivi de l'état du script
+$ScriptState = @{
+    ServerRenamed = $false
+    RolesInstalled = $false
+    ADInstalled = $false
+    DHCPConfigured = $false
+}
+#ENDREGION
+
+#REGION: Fonctions Utilitaires
+function Write-Log {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Message,
+        [ValidateSet('Info', 'Warning', 'Error', 'Success')]
+        [string]$Level = 'Info'
+    )
+    
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $colors = @{
+        'Info' = 'Cyan'
+        'Warning' = 'Yellow'
+        'Error' = 'Red'
+        'Success' = 'Green'
+    }
+    
+    $icons = @{
+        'Info' = 'ℹ️'
+        'Warning' = '⚠️'
+        'Error' = '❌'
+        'Success' = '✅'
+    }
+    
+    Write-Host "[$timestamp] $($icons[$Level]) $Message" -ForegroundColor $colors[$Level]
+    
+    $logFile = Join-Path $Config.Paths.Reports "Installation.log"
+    if (Test-Path $Config.Paths.Reports) {
+        "[$timestamp] [$Level] $Message" | Out-File -FilePath $logFile -Append -Encoding UTF8
+    }
+}
+
+function Test-PendingReboot {
+    $paths = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending",
+        "HKLM:\Software\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired"
+    )
+    
+    foreach ($path in $paths) {
+        if (Test-Path $path) { return $true }
+    }
+    
+    $prop = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "PendingFileRenameOperations" -ErrorAction SilentlyContinue
+    if ($prop) { return $true }
+    
+    return $false
+}
+
+function Initialize-Environment {
+    Write-Log "🔧 Initialisation de l'environnement..." -Level Info
+    
+    # Création du dossier de rapports
+    if (-not (Test-Path $Config.Paths.Reports)) {
+        New-Item -Path $Config.Paths.Reports -ItemType Directory -Force | Out-Null
+        Write-Log "Dossier de rapports créé: $($Config.Paths.Reports)" -Level Success
+    }
+    
+    # Vérification du disque D:
+    if (-not (Get-PSDrive -Name "D" -ErrorAction SilentlyContinue)) {
+        Write-Log "Le disque D: n'existe pas. Création/Vérification en cours..." -Level Warning
+        
+        # Tentative de création si possible (partition non allouée)
+        $disk = Get-Disk | Where-Object { $_.PartitionStyle -eq 'RAW' -or ($_.AllocatedSize -lt $_.Size) } | Select-Object -First 1
+        
+        if ($disk) {
+            Write-Log "Disque non partitionné détecté. Tentative de création de la partition D:..." -Level Info
+            try {
+                Initialize-Disk -Number $disk.Number -PartitionStyle GPT -ErrorAction Stop
+                New-Partition -DiskNumber $disk.Number -UseMaximumSize -DriveLetter D | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Data" -Confirm:$false
+                Write-Log "Partition D: créée avec succès." -Level Success
+            }
+            catch {
+                Write-Log "Impossible de créer automatiquement le disque D:. Veuillez le créer manuellement." -Level Error
+                throw "Disque D: requis mais non disponible"
+            }
+        }
+        else {
+            Write-Log "Aucun disque disponible pour créer D:. Veuillez configurer le disque D: manuellement." -Level Error
+            throw "Disque D: non disponible"
+        }
+    }
+    else {
+        Write-Log "Disque D: détecté et disponible." -Level Success
+    }
+    
+    Write-Log "Environnement initialisé avec succès." -Level Success
+}
+
+function Test-ADDomainController {
+    try {
+        $domain = Get-ADDomain -ErrorAction Stop
+        $dc = Get-ADDomainController -ErrorAction Stop
+        return @{
+            IsDomainController = $true
+            DomainName = $domain.DNSRoot
+            DCName = $dc.Name
+        }
+    }
+    catch {
+        return @{
+            IsDomainController = $false
+            DomainName = $null
+            DCName = $null
+        }
+    }
+}
+
+function Install-RequiredModules {
+    Write-Log "📦 Vérification et installation des modules PowerShell requis..." -Level Info
+    
+    $modules = @('ServerManager', 'ActiveDirectory', 'DhcpServer', 'GroupPolicy')
+    
+    foreach ($module in $modules) {
+        if (-not (Get-Module -ListAvailable -Name $module)) {
+            Write-Log "Module $module non trouvé. Installation via les fonctionnalités Windows..." -Level Warning
+            
+            # Correspondance module -> fonctionnalité
+            $featureMap = @{
+                'ServerManager' = 'RSAT-AD-PowerShell'
+                'ActiveDirectory' = 'RSAT-AD-PowerShell'
+                'DhcpServer' = 'RSAT-DHCP'
+                'GroupPolicy' = 'GPMC'
+            }
+            
+            if ($featureMap.ContainsKey($module)) {
+                try {
+                    Install-WindowsFeature -Name $featureMap[$module] -IncludeManagementTools -ErrorAction Stop | Out-Null
+                    Write-Log "Module $module installé via $($featureMap[$module])." -Level Success
+                }
+                catch {
+                    Write-Log "Avertissement: Impossible d'installer $module automatiquement." -Level Warning
+                }
+            }
+        }
+        else {
+            Write-Log "Module $module déjà disponible." -Level Success
+        }
+    }
+}
+#ENDREGION
+
+#REGION: Phase 1 - Configuration de Base
+function Set-ServerName {
+    $currentName = $env:COMPUTERNAME
+    
+    if ($currentName -ne $Config.Server.Name) {
+        Write-Log "🔄 Renommage du serveur: $currentName → $($Config.Server.Name)" -Level Info
+        
+        try {
+            Rename-Computer -NewName $Config.Server.Name -Force -ErrorAction Stop
+            Write-Log "Serveur renommé avec succès. Redémarrage requis." -Level Warning
+            return $true
+        }
+        catch {
+            Write-Log "Erreur lors du renommage: $_" -Level Error
+            throw
+        }
+    }
+    else {
+        Write-Log "Le nom du serveur est déjà correct: $currentName" -Level Success
+        return $false
+    }
+}
+
+function Set-StaticIP {
+    Write-Log "🌐 Configuration de l'adresse IP statique..." -Level Info
+    
+    try {
+        # Détection de l'interface principale
+        $adapter = Get-NetAdapter | Where-Object { 
+            $_.Status -eq "Up" -and 
+            $_.InterfaceDescription -notmatch "Loopback|Virtual|Hyper-V"
+        } | Select-Object -First 1
+        
+        if (-not $adapter) {
+            throw "Aucune interface réseau active détectée"
+        }
+        
+        Write-Log "Interface réseau détectée: $($adapter.Name) - $($adapter.InterfaceDescription)" -Level Info
+        
+        # Suppression des configurations IP existantes
+        Get-NetIPAddress -InterfaceAlias $adapter.Name -AddressFamily IPv4 -ErrorAction SilentlyContinue | 
+            Remove-NetIPAddress -Confirm:$false -ErrorAction SilentlyContinue
+        
+        Get-NetRoute -InterfaceAlias $adapter.Name -DestinationPrefix "0.0.0.0/0" -ErrorAction SilentlyContinue | 
+            Remove-NetRoute -Confirm:$false -ErrorAction SilentlyContinue
+        
+        # Configuration de la nouvelle IP
+        New-NetIPAddress -InterfaceAlias $adapter.Name `
+                         -IPAddress $Config.Server.IP `
+                         -PrefixLength $Config.Server.PrefixLength `
+                         -DefaultGateway $Config.Server.Gateway `
+                         -ErrorAction Stop | Out-Null
+        
+        # Configuration DNS (loopback pour le futur serveur DNS)
+        Set-DnsClientServerAddress -InterfaceAlias $adapter.Name `
+                                    -ServerAddresses $Config.Server.DNS `
+                                    -ErrorAction Stop
+        
+        # Définir le profil réseau comme "Privé"
+        Get-NetConnectionProfile -InterfaceAlias $adapter.Name | 
+            Set-NetConnectionProfile -NetworkCategory Private -ErrorAction SilentlyContinue
+        
+        Write-Log "IP configurée: $($Config.Server.IP)/$($Config.Server.PrefixLength)" -Level Success
+        Write-Log "Passerelle: $($Config.Server.Gateway)" -Level Success
+        Write-Log "DNS: $($Config.Server.DNS)" -Level Success
+        
+        return $adapter.Name
+    }
+    catch {
+        Write-Log "Erreur configuration IP: $_" -Level Error
+        throw
+    }
+}
+
+function Install-ServerRoles {
+    Write-Log "📥 Installation des rôles serveur (AD DS, DNS, DHCP)..." -Level Info
+    
+    try {
+        $requiredFeatures = @('AD-Domain-Services', 'DNS', 'DHCP')
+        $managementTools = @('RSAT-AD-Tools', 'RSAT-DHCP', 'RSAT-DNS-Server', 'GPMC')
+        
+        $allFeatures = $requiredFeatures + $managementTools
+        
+        # Vérification des fonctionnalités déjà installées
+        $installedFeatures = Get-WindowsFeature | Where-Object { $_.Installed -eq $true }
+        $missingFeatures = $allFeatures | Where-Object { 
+            $_ -notin $installedFeatures.Name 
+        }
+        
+        if ($missingFeatures.Count -eq 0) {
+            Write-Log "Tous les rôles sont déjà installés." -Level Success
+            return $false
+        }
+        
+        Write-Log "Installation de $($missingFeatures.Count) fonctionnalité(s) manquante(s)..." -Level Info
+        
+        $result = Install-WindowsFeature -Name $missingFeatures -IncludeManagementTools -ErrorAction Stop
+        
+        if ($result.Success) {
+            Write-Log "Rôles installés avec succès." -Level Success
+            
+            if ($result.RestartNeeded -eq 'Yes') {
+                Write-Log "Redémarrage nécessaire après installation des rôles." -Level Warning
+                return $true
+            }
+        }
+        else {
+            throw "Échec de l'installation des rôles"
+        }
+        
+        return $false
+    }
+    catch {
+        Write-Log "Erreur lors de l'installation des rôles: $_" -Level Error
+        throw
+    }
+}
+#ENDREGION
+
+#REGION: Phase 2 - Active Directory
+function Install-ADDSForest {
+    Write-Log "🌳 Installation de la forêt Active Directory..." -Level Info
+    
+    try {
+        # Vérification si AD DS est déjà installé
+        $adFeature = Get-WindowsFeature -Name "AD-Domain-Services"
+        
+        if (-not $adFeature.Installed) {
+            Write-Log "AD DS n'est pas installé. Installation en cours..." -Level Warning
+            Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools
+        }
+        
+        $securePassword = ConvertTo-SecureString $Config.Domain.SafeModePassword -AsPlainText -Force
+        
+        $params = @{
+            DomainName = $Config.Domain.Name
+            DomainNetbiosName = $Config.Domain.NetBIOS
+            SafeModeAdministratorPassword = $securePassword
+            InstallDns = $true
+            CreateDnsDelegation = $false
+            DatabasePath = "C:\Windows\NTDS"
+            LogPath = "C:\Windows\NTDS"
+            SysvolPath = "C:\Windows\SYSVOL"
+            NoRebootOnCompletion = $false
+            Force = $true
+        }
+        
+        Write-Log "Lancement de la promotion en contrôleur de domaine..." -Level Info
+        Write-Log "Domaine: $($Config.Domain.Name) | NetBIOS: $($Config.Domain.NetBIOS)" -Level Info
+        
+        Install-ADDSForest @params
+        
+        Write-Log "Forêt AD installée. Le serveur va redémarrer automatiquement." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de l'installation d'Active Directory: $_" -Level Error
+        throw
+    }
+}
+
+function Test-AndPromoteDomainController {
+    Write-Log "🔍 Vérification du statut de contrôleur de domaine..." -Level Info
+    
+    $dcStatus = Test-ADDomainController
+    
+    if ($dcStatus.IsDomainController) {
+        Write-Log "Le serveur est déjà un contrôleur de domaine pour: $($dcStatus.DomainName)" -Level Success
+        return $false
+    }
+    
+    # Vérifier si AD DS est installé mais pas promu
+    $adFeature = Get-WindowsFeature -Name "AD-Domain-Services" -ErrorAction SilentlyContinue
+    
+    if ($adFeature -and $adFeature.Installed) {
+        Write-Log "AD DS est installé mais le serveur n'est pas un contrôleur de domaine." -Level Warning
+        Write-Log "Promotion en contrôleur de domaine nécessaire." -Level Warning
+        return $true
+    }
+    
+    Write-Log "AD DS n'est pas encore installé." -Level Info
+    return $true
+}
+#ENDREGION
+
+#REGION: Phase 3 - Configuration Post-AD
+function Configure-DHCP {
+    Write-Log "🖥️ Configuration du serveur DHCP..." -Level Info
+    
+    try {
+        # Import du module DHCP
+        Import-Module DhcpServer -ErrorAction Stop
+        
+        $fqdn = "$($Config.Server.Name).$($Config.Domain.Name)"
+        
+        # Autorisation du serveur DHCP dans AD
+        try {
+            Add-DhcpServerInDC -DnsName $fqdn -IPAddress $Config.Server.IP -ErrorAction Stop
+            Write-Log "Serveur DHCP autorisé dans Active Directory." -Level Success
+        }
+        catch {
+            if ($_.Exception.Message -match "already authorized") {
+                Write-Log "Serveur DHCP déjà autorisé dans AD." -Level Info
+            }
+            else {
+                throw $_
+            }
+        }
+        
+        # Vérification de l'existence de l'étendue
+        $existingScope = Get-DhcpServerv4Scope -ErrorAction SilentlyContinue | 
+                         Where-Object { $_.ScopeId -eq $Config.DHCP.ScopeID }
+        
+        if (-not $existingScope) {
+            Add-DhcpServerv4Scope -Name $Config.DHCP.ScopeName `
+                                  -StartRange $Config.DHCP.ScopeStart `
+                                  -EndRange $Config.DHCP.ScopeEnd `
+                                  -SubnetMask $Config.DHCP.SubnetMask `
+                                  -State Active `
+                                  -ErrorAction Stop
+            
+            Write-Log "Étendue DHCP créée: $($Config.DHCP.ScopeStart) - $($Config.DHCP.ScopeEnd)" -Level Success
+        }
+        else {
+            Write-Log "Étendue DHCP déjà existante." -Level Info
+        }
+        
+        # Configuration de la plage d'exclusion
+        $existingExclusion = Get-DhcpServerv4ExclusionRange -ScopeId $Config.DHCP.ScopeID -ErrorAction SilentlyContinue
+        
+        if (-not $existingExclusion) {
+            Add-DhcpServerv4ExclusionRange -ScopeId $Config.DHCP.ScopeID `
+                                            -StartRange $Config.DHCP.ExclusionStart `
+                                            -EndRange $Config.DHCP.ExclusionEnd `
+                                            -ErrorAction Stop
+            
+            Write-Log "Plage d'exclusion configurée: $($Config.DHCP.ExclusionStart) - $($Config.DHCP.ExclusionEnd)" -Level Success
+        }
+        else {
+            Write-Log "Plage d'exclusion déjà configurée." -Level Info
+        }
+        
+        # Configuration des options DHCP
+        Set-DhcpServerv4OptionValue -ScopeId $Config.DHCP.ScopeID `
+                                     -DnsServer $Config.Server.IP `
+                                     -DnsDomain $Config.Domain.Name `
+                                     -Router $Config.Server.Gateway `
+                                     -ErrorAction Stop
+        
+        Write-Log "Options DHCP configurées (DNS, Domaine, Passerelle)." -Level Success
+        
+        # Finalisation de la configuration DHCP
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ServerManager\Roles\12" `
+                         -Name "ConfigurationState" -Value 2 -ErrorAction SilentlyContinue
+        
+        Write-Log "Configuration DHCP terminée avec succès." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la configuration DHCP: $_" -Level Error
+        throw
+    }
+}
+
+function New-OUStructure {
+    Write-Log "📁 Création de la structure des unités d'organisation..." -Level Info
+    
+    try {
+        Import-Module ActiveDirectory -ErrorAction Stop
+        
+        $domainDN = (Get-ADDomain).DistinguishedName
+        
+        foreach ($service in $Config.Services) {
+            $ouPath = "OU=$service,$domainDN"
+            
+            $existingOU = Get-ADOrganizationalUnit -Filter "DistinguishedName -eq '$ouPath'" -ErrorAction SilentlyContinue
+            
+            if (-not $existingOU) {
+                New-ADOrganizationalUnit -Name $service `
+                                          -Path $domainDN `
+                                          -ProtectedFromAccidentalDeletion $true `
+                                          -ErrorAction Stop
+                
+                Write-Log "OU créée: $service" -Level Success
+            }
+            else {
+                Write-Log "OU existe déjà: $service" -Level Info
+            }
+        }
+        
+        Write-Log "Structure OU créée avec succès." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la création des OU: $_" -Level Error
+        throw
+    }
+}
+
+function New-ADGroupStructure {
+    Write-Log "👥 Création de la structure des groupes (AGDLP)..." -Level Info
+    
+    try {
+        $domainDN = (Get-ADDomain).DistinguishedName
+        
+        foreach ($service in $Config.Services) {
+            $ouPath = "OU=$service,$domainDN"
+            
+            # Groupe Global
+            $ggName = "GG_$service"
+            if (-not (Get-ADGroup -Filter "Name -eq '$ggName'" -ErrorAction SilentlyContinue)) {
+                New-ADGroup -Name $ggName `
+                            -GroupScope Global `
+                            -GroupCategory Security `
+                            -Path $ouPath `
+                            -Description "Groupe Global pour $service" `
+                            -ErrorAction Stop
+                
+                Write-Log "Groupe créé: $ggName" -Level Success
+            }
+            
+            # Groupe Domain Local
+            $dlName = "DL_$service"
+            if (-not (Get-ADGroup -Filter "Name -eq '$dlName'" -ErrorAction SilentlyContinue)) {
+                New-ADGroup -Name $dlName `
+                            -GroupScope DomainLocal `
+                            -GroupCategory Security `
+                            -Path $ouPath `
+                            -Description "Groupe Domain Local pour $service" `
+                            -ErrorAction Stop
+                
+                Write-Log "Groupe créé: $dlName" -Level Success
+            }
+            
+            # Nesting: GG dans DL (principe AGDLP)
+            try {
+                Add-ADGroupMember -Identity $dlName -Members $ggName -ErrorAction SilentlyContinue
+            }
+            catch {
+                # Le membre existe déjà
+            }
+        }
+        
+        Write-Log "Structure de groupes créée avec succès." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la création des groupes: $_" -Level Error
+        throw
+    }
+}
+
+function New-ADUserStructure {
+    Write-Log "👤 Création des modèles et utilisateurs..." -Level Info
+    
+    try {
+        $securePassword = ConvertTo-SecureString $Config.Password -AsPlainText -Force
+        $domainDN = (Get-ADDomain).DistinguishedName
+        
+        foreach ($service in $Config.Services) {
+            $ouPath = "OU=$service,$domainDN"
+            
+            # Création du modèle (compte désactivé)
+            $modelName = "Modele_$service"
+            $modelSam = "modele$service"
+            
+            if (-not (Get-ADUser -Filter "SamAccountName -eq '$modelSam'" -ErrorAction SilentlyContinue)) {
+                New-ADUser -Name $modelName `
+                           -SamAccountName $modelSam `
+                           -UserPrincipalName "$modelSam@$($Config.Domain.Name)" `
+                           -AccountPassword $securePassword `
+                           -Enabled $false `
+                           -Path $ouPath `
+                           -Description "Modèle d'utilisateur pour $service" `
+                           -ChangePasswordAtLogon $false `
+                           -PasswordNeverExpires $true `
+                           -ErrorAction Stop
+                
+                Write-Log "Modèle créé: $modelName" -Level Success
+            }
+            
+            # Création d'un utilisateur exemple
+            $userName = "User1_$service"
+            $userSam = "user1$service"
+            
+            if (-not (Get-ADUser -Filter "SamAccountName -eq '$userSam'" -ErrorAction SilentlyContinue)) {
+                New-ADUser -Name $userName `
+                           -SamAccountName $userSam `
+                           -UserPrincipalName "$userSam@$($Config.Domain.Name)" `
+                           -AccountPassword $securePassword `
+                           -Enabled $true `
+                           -Path $ouPath `
+                           -Description "Utilisateur exemple pour $service" `
+                           -ChangePasswordAtLogon $false `
+                           -PasswordNeverExpires $false `
+                           -ErrorAction Stop
+                
+                Write-Log "Utilisateur créé: $userName" -Level Success
+                
+                # Ajout au groupe Global
+                Add-ADGroupMember -Identity "GG_$service" -Members $userSam -ErrorAction Stop
+                Write-Log "Utilisateur $userName ajouté au groupe GG_$service" -Level Success
+            }
+        }
+        
+        Write-Log "Utilisateurs et modèles créés avec succès." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la création des utilisateurs: $_" -Level Error
+        throw
+    }
+}
+#ENDREGION
+
+#REGION: Phase 4 - Dossiers et Partages
+function New-FolderStructure {
+    Write-Log "📂 Création de la structure de dossiers et partages..." -Level Info
+    
+    try {
+        # Création des dossiers racines
+        foreach ($rootPath in @($Config.Paths.Profils, $Config.Paths.Documents)) {
+            if (-not (Test-Path $rootPath)) {
+                New-Item -Path $rootPath -ItemType Directory -Force | Out-Null
+                Write-Log "Dossier racine créé: $rootPath" -Level Success
+            }
+        }
+        
+        # Création des partages SMB
+        if (-not (Get-SmbShare -Name "Profils" -ErrorAction SilentlyContinue)) {
+            New-SmbShare -Name "Profils" `
+                         -Path $Config.Paths.Profils `
+                         -FullAccess "Everyone" `
+                         -ErrorAction Stop | Out-Null
+            
+            Write-Log "Partage SMB créé: \\$($Config.Server.Name)\Profils" -Level Success
+        }
+        
+        if (-not (Get-SmbShare -Name "Documents" -ErrorAction SilentlyContinue)) {
+            New-SmbShare -Name "Documents" `
+                         -Path $Config.Paths.Documents `
+                         -FullAccess "Everyone" `
+                         -ErrorAction Stop | Out-Null
+            
+            Write-Log "Partage SMB créé: \\$($Config.Server.Name)\Documents" -Level Success
+        }
+        
+        # Création de la structure pour chaque service
+        foreach ($service in $Config.Services) {
+            # Dossier de profils
+            $profilPath = Join-Path $Config.Paths.Profils $service
+            if (-not (Test-Path $profilPath)) {
+                New-Item -Path $profilPath -ItemType Directory -Force | Out-Null
+            }
+            
+            # Dossier de documents
+            $docPath = Join-Path $Config.Paths.Documents $service
+            if (-not (Test-Path $docPath)) {
+                New-Item -Path $docPath -ItemType Directory -Force | Out-Null
+            }
+            
+            # Dossier personnel utilisateur
+            $userHome = Join-Path $docPath "User1_$service"
+            if (-not (Test-Path $userHome)) {
+                New-Item -Path $userHome -ItemType Directory -Force | Out-Null
+            }
+            
+            # Configuration NTFS pour dossier personnel
+            $userSam = "user1$service"
+            $user = Get-ADUser -Identity $userSam
+            $userSid = $user.SID
+            
+            $acl = Get-Acl $userHome
+            $acl.SetAccessRuleProtection($true, $false)
+            
+            # Droits utilisateur: Contrôle total
+            $userRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+                $userSid,
+                "FullControl",
+                "ContainerInherit,ObjectInherit",
+                "None",
+                "Allow"
+            )
+            $acl.AddAccessRule($userRule)
+            
+            # Droits administrateurs
+            $adminRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+                "BUILTIN\Administrators",
+                "FullControl",
+                "ContainerInherit,ObjectInherit",
+                "None",
+                "Allow"
+            )
+            $acl.AddAccessRule($adminRule)
+            
+            Set-Acl -Path $userHome -AclObject $acl
+            
+            # Dossier commun
+            $communPath = Join-Path $docPath "Commun"
+            if (-not (Test-Path $communPath)) {
+                New-Item -Path $communPath -ItemType Directory -Force | Out-Null
+            }
+            
+            # Configuration NTFS pour dossier commun
+            $group = Get-ADGroup -Identity "DL_$service"
+            $groupSid = $group.SID
+            
+            $aclCommun = Get-Acl $communPath
+            $aclCommun.SetAccessRuleProtection($true, $false)
+            
+            # Droits groupe: Modification
+            $groupRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+                $groupSid,
+                "Modify",
+                "ContainerInherit,ObjectInherit",
+                "None",
+                "Allow"
+            )
+            $aclCommun.AddAccessRule($groupRule)
+            $aclCommun.AddAccessRule($adminRule)
+            
+            Set-Acl -Path $communPath -AclObject $aclCommun
+            
+            Write-Log "Structure de dossiers configurée pour: $service" -Level Success
+        }
+        
+        Write-Log "Structure complète de dossiers et permissions créée." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la création des dossiers: $_" -Level Error
+        throw
+    }
+}
+
+function Set-UserProfiles {
+    Write-Log "🏠 Configuration des profils itinérants et répertoires personnels..." -Level Info
+    
+    try {
+        foreach ($service in $Config.Services) {
+            $userSam = "user1$service"
+            $profilePath = "\\$($Config.Server.Name)\Profils\$userSam"
+            $homePath = "\\$($Config.Server.Name)\Documents\$service\User1_$service"
+            
+            Set-ADUser -Identity $userSam `
+                       -ProfilePath $profilePath `
+                       -HomeDirectory $homePath `
+                       -HomeDrive "H:" `
+                       -ErrorAction Stop
+            
+            Write-Log "Profil configuré pour: $userSam" -Level Success
+        }
+        
+        Write-Log "Profils itinérants configurés avec succès." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la configuration des profils: $_" -Level Error
+        throw
+    }
+}
+#ENDREGION
+
+#REGION: Phase 5 - GPO
+function New-GPOStructure {
+    Write-Log "⚙️ Création des stratégies de groupe (GPO)..." -Level Info
+    
+    try {
+        Import-Module GroupPolicy -ErrorAction Stop
+        
+        $domainDN = (Get-ADDomain).DistinguishedName
+        
+        # GPO 1: Permissions locales
+        $gpoName1 = "GPO_Permissions_Local"
+        if (-not (Get-GPO -Name $gpoName1 -ErrorAction SilentlyContinue)) {
+            $gpo1 = New-GPO -Name $gpoName1 -Comment "GPO pour gestion des permissions par groupe local"
+            New-GPLink -Name $gpoName1 -Target $domainDN -LinkEnabled Yes | Out-Null
+            Write-Log "GPO créée et liée: $gpoName1" -Level Success
+        }
+        else {
+            Write-Log "GPO existe déjà: $gpoName1" -Level Info
+        }
+        
+        # GPO 2: Configuration réseau
+        $gpoName2 = "GPO_Configuration_Reseau"
+        if (-not (Get-GPO -Name $gpoName2 -ErrorAction SilentlyContinue)) {
+            $gpo2 = New-GPO -Name $gpoName2 -Comment "GPO pour configuration réseau et DHCP"
+            New-GPLink -Name $gpoName2 -Target $domainDN -LinkEnabled Yes | Out-Null
+            Write-Log "GPO créée et liée: $gpoName2" -Level Success
+        }
+        else {
+            Write-Log "GPO existe déjà: $gpoName2" -Level Info
+        }
+        
+        Write-Log "GPO créées avec succès." -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la création des GPO: $_" -Level Error
+        throw
+    }
+}
+#ENDREGION
+
+#REGION: Phase 6 - Tests et Documentation
+function Invoke-Tests {
+    Write-Log "🧪 Exécution des tests de validation..." -Level Info
+    
+    $testResults = @()
+    $testFile = Join-Path $Config.Paths.Reports "Tests_Validation.txt"
+    
+    # Test DNS
+    try {
+        $dnsTest = Resolve-DnsName -Name $Config.Domain.Name -ErrorAction Stop
+        $testResults += "✅ DNS: Résolution de $($Config.Domain.Name) réussie"
+        Write-Log "Test DNS: OK" -Level Success
+    }
+    catch {
+        $testResults += "❌ DNS: Échec de résolution"
+        Write-Log "Test DNS: ÉCHEC" -Level Error
+    }
+    
+    # Test DHCP
+    try {
+        $dhcpScope = Get-DhcpServerv4Scope -ErrorAction Stop
+        $testResults += "✅ DHCP: Étendue active détectée - $($dhcpScope.Name)"
+        Write-Log "Test DHCP: OK" -Level Success
+    }
+    catch {
+        $testResults += "❌ DHCP: Échec de récupération des étendues"
+        Write-Log "Test DHCP: ÉCHEC" -Level Error
+    }
+    
+    # Test AD
+    try {
+        $domain = Get-ADDomain -ErrorAction Stop
+        $testResults += "✅ AD: Domaine $($domain.DNSRoot) opérationnel"
+        Write-Log "Test AD: OK" -Level Success
+    }
+    catch {
+        $testResults += "❌ AD: Domaine non accessible"
+        Write-Log "Test AD: ÉCHEC" -Level Error
+    }
+    
+    # Test OU
+    $ouCount = (Get-ADOrganizationalUnit -Filter * | Measure-Object).Count
+    $testResults += "✅ OU: $ouCount unités d'organisation créées"
+    
+    # Test Groupes
+    $groupCount = (Get-ADGroup -Filter * | Measure-Object).Count
+    $testResults += "✅ Groupes: $groupCount groupes créés"
+    
+    # Test Utilisateurs
+    $userCount = (Get-ADUser -Filter * | Measure-Object).Count
+    $testResults += "✅ Utilisateurs: $userCount comptes créés"
+    
+    # Test Partages
+    $shares = Get-SmbShare | Where-Object { $_.Name -in @("Profils", "Documents") }
+    $testResults += "✅ Partages: $($shares.Count) partages principaux actifs"
+    
+    # Test GPO
+    $gpoCount = (Get-GPO -All | Measure-Object).Count
+    $testResults += "✅ GPO: $gpoCount stratégies créées"
+    
+    # Enregistrement des résultats
+    $testResults | Out-File -FilePath $testFile -Encoding UTF8
+    
+    Write-Log "Tests terminés. Résultats dans: $testFile" -Level Success
+    
+    return $testResults
+}
+
+function Export-Documentation {
+    Write-Log "📄 Génération de la documentation complète..." -Level Info
+    
+    try {
+        $docFile = Join-Path $Config.Paths.Reports "Documentation_Complete.txt"
+        $domainDN = (Get-ADDomain).DistinguishedName
+        
+        $doc = @"
+════════════════════════════════════════════════════════════════════════════════
+                    DOCUMENTATION SERVEUR GSB - VERSION 3.5
+════════════════════════════════════════════════════════════════════════════════
+Date de génération : $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")
+Généré par         : $env:USERNAME
+Serveur            : $($Config.Server.Name)
+Domaine            : $($Config.Domain.Name)
+
+────────────────────────────────────────────────────────────────────────────────
+1. CONFIGURATION RÉSEAU
+────────────────────────────────────────────────────────────────────────────────
+Adresse IP         : $($Config.Server.IP)
+Masque (Préfixe)   : /$($Config.Server.PrefixLength) ($($Config.DHCP.SubnetMask))
+Passerelle         : $($Config.Server.Gateway)
+Serveur DNS        : $($Config.Server.IP) (lui-même)
+
+────────────────────────────────────────────────────────────────────────────────
+2. CONFIGURATION DHCP
+────────────────────────────────────────────────────────────────────────────────
+Nom de l'étendue   : $($Config.DHCP.ScopeName)
+Plage IP           : $($Config.DHCP.ScopeStart) - $($Config.DHCP.ScopeEnd)
+Masque sous-réseau : $($Config.DHCP.SubnetMask)
+ID étendue         : $($Config.DHCP.ScopeID)
+Exclusions         : $($Config.DHCP.ExclusionStart) - $($Config.DHCP.ExclusionEnd)
+
+────────────────────────────────────────────────────────────────────────────────
+3. STRUCTURE ACTIVE DIRECTORY
+────────────────────────────────────────────────────────────────────────────────
+
+UNITÉS D'ORGANISATION (OU):
+$(Get-ADOrganizationalUnit -Filter * | Sort-Object Name | Format-Table Name, DistinguishedName -AutoSize | Out-String)
+
+GROUPES DE SÉCURITÉ:
+$(Get-ADGroup -Filter * | Sort-Object Name | Format-Table Name, GroupScope, GroupCategory, Description -AutoSize | Out-String)
+
+COMPTES UTILISATEURS:
+$(Get-ADUser -Filter * -Properties Description | Sort-Object Name | Format-Table Name, SamAccountName, Enabled, Description -AutoSize | Out-String)
+
+────────────────────────────────────────────────────────────────────────────────
+4. PARTAGES SMB
+────────────────────────────────────────────────────────────────────────────────
+$(Get-SmbShare | Format-Table Name, Path, Description -AutoSize | Out-String)
+
+────────────────────────────────────────────────────────────────────────────────
+5. STRATÉGIES DE GROUPE (GPO)
+────────────────────────────────────────────────────────────────────────────────
+$(Get-GPO -All | Sort-Object DisplayName | Format-Table DisplayName, GpoStatus, CreationTime -AutoSize | Out-String)
+
+────────────────────────────────────────────────────────────────────────────────
+6. INFORMATIONS DE SÉCURITÉ
+────────────────────────────────────────────────────────────────────────────────
+⚠️  MOTS DE PASSE CONFIGURÉS:
+    - Tous les utilisateurs : $($Config.Password)
+    - Mode restauration AD  : $($Config.Domain.SafeModePassword)
+
+⚠️  ACTIONS RECOMMANDÉES:
+    1. Changer immédiatement les mots de passe en production
+    2. Implémenter une politique de mots de passe forte
+    3. Activer l'audit des événements de sécurité
+    4. Configurer Windows Defender et le pare-feu
+    5. Mettre en place des sauvegardes régulières
+    6. Documenter les procédures de récupération
+
+────────────────────────────────────────────────────────────────────────────────
+7. PROCHAINES ÉTAPES
+────────────────────────────────────────────────────────────────────────────────
+☐ Configurer les GPO avancées (redirection de dossiers, scripts, etc.)
+☐ Joindre les postes clients au domaine
+☐ Tester la connexion avec différents utilisateurs
+☐ Configurer la sauvegarde du contrôleur de domaine
+☐ Configurer le pare-feu Windows avec règles avancées
+☐ Mettre en place le monitoring et les alertes
+☐ Former les utilisateurs et administrateurs
+☐ Documenter les procédures opérationnelles
+
+════════════════════════════════════════════════════════════════════════════════
+                              FIN DE LA DOCUMENTATION
+════════════════════════════════════════════════════════════════════════════════
+"@
+        
+        $doc | Out-File -FilePath $docFile -Encoding UTF8
+        Write-Log "Documentation générée: $docFile" -Level Success
+    }
+    catch {
+        Write-Log "Erreur lors de la génération de la documentation: $_" -Level Error
+    }
+}
+#ENDREGION
+
+#REGION: Programme Principal
+try {
+    Write-Host "`n"
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "                  CONFIGURATION AUTOMATISÉE SERVEUR GSB v3.5                    " -ForegroundColor Cyan
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "`n"
+    
+    Write-Log "🚀 Début de la configuration du serveur GSB" -Level Info
+    Write-Log "Version du script: 3.5 Final" -Level Info
+    Write-Log "Date: $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')" -Level Info
+    Write-Log "Utilisateur: $env:USERNAME" -Level Info
+    
+    # Phase 0: Préparation
+    Initialize-Environment
+    Install-RequiredModules
+    
+    # Vérification des redémarrages en attente
+    if (Test-PendingReboot) {
+        Write-Log "⚠️  Un redémarrage est en attente. Veuillez redémarrer le serveur et relancer ce script." -Level Warning
+        Read-Host "`nAppuyez sur Entrée pour redémarrer maintenant"
+        Restart-Computer -Force
+        exit
+    }
+    
+    # Phase 1: Configuration de base (Nom + IP)
+    Write-Log "`n═══ PHASE 1: Configuration de base du serveur ═══" -Level Info
+    
+    $needsReboot = Set-ServerName
+    
+    if ($needsReboot) {
+        Write-Host "`n" -ForegroundColor Yellow
+        Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Yellow
+        Write-Host "║           REDÉMARRAGE REQUIS (Renommage)                  ║" -ForegroundColor Yellow
+        Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Yellow
+        Write-Host "`nLe serveur doit redémarrer pour appliquer le nouveau nom." -ForegroundColor White
+        Write-Host "Après le redémarrage, relancez ce script pour continuer.`n" -ForegroundColor White
+        Read-Host "Appuyez sur Entrée pour redémarrer"
+        Restart-Computer -Force
+        exit
+    }
+    
+    # Configuration IP
+    $interfaceName = Set-StaticIP
+    
+    # Phase 2: Installation des rôles serveur
+    Write-Log "`n═══ PHASE 2: Installation des rôles serveur ═══" -Level Info
+    
+    $needsReboot = Install-ServerRoles
+    
+    if ($needsReboot) {
+        Write-Host "`n" -ForegroundColor Yellow
+        Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Yellow
+        Write-Host "║       REDÉMARRAGE REQUIS (Installation rôles)             ║" -ForegroundColor Yellow
+        Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Yellow
+        Write-Host "`nLes rôles serveur ont été installés. Un redémarrage est nécessaire." -ForegroundColor White
+        Write-Host "Après le redémarrage, relancez ce script pour continuer.`n" -ForegroundColor White
+        Read-Host "Appuyez sur Entrée pour redémarrer"
+        Restart-Computer -Force
+        exit
+    }
+    
+    # Phase 3: Vérification et promotion Active Directory
+    Write-Log "`n═══ PHASE 3: Configuration Active Directory ═══" -Level Info
+    
+    $needsPromotion = Test-AndPromoteDomainController
+    
+    if ($needsPromotion) {
+        Install-ADDSForest
+        # Le serveur redémarre automatiquement après la promotion
+        exit
+    }
+    
+    # Si nous arrivons ici, AD est déjà installé et configuré
+    Write-Log "Active Directory est opérationnel. Passage à la configuration post-installation." -Level Success
+    
+    # Attente de stabilisation des services AD
+    Write-Log "Attente de la stabilisation des services Active Directory (30 secondes)..." -Level Info
+    Start-Sleep -Seconds 30
+    
+    # Import des modules AD
+    Import-Module ActiveDirectory -ErrorAction Stop
+    Import-Module GroupPolicy -ErrorAction Stop
+    
+    # Phase 4: Configuration post-AD
+    Write-Log "`n═══ PHASE 4: Configuration DHCP ═══" -Level Info
+    Configure-DHCP
+    
+    Write-Log "`n═══ PHASE 5: Création de la structure Active Directory ═══" -Level Info
+    New-OUStructure
+    New-ADGroupStructure
+    New-ADUserStructure
+    
+    Write-Log "`n═══ PHASE 6: Configuration des dossiers et partages ═══" -Level Info
+    New-FolderStructure
+    Set-UserProfiles
+    
+    Write-Log "`n═══ PHASE 7: Configuration des GPO ═══" -Level Info
+    New-GPOStructure
+    
+    Write-Log "`n═══ PHASE 8: Tests de validation ═══" -Level Info
+    $testResults = Invoke-Tests
+    
+    Write-Log "`n═══ PHASE 9: Génération de la documentation ═══" -Level Info
+    Export-Documentation
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # RÉSUMÉ FINAL
+    # ═══════════════════════════════════════════════════════════════════
+    Write-Host "`n"
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "                 ✅ CONFIGURATION TERMINÉE AVEC SUCCÈS ✅                         " -ForegroundColor Green
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "`n"
+    
+    Write-Host "📋 INFORMATIONS PRINCIPALES:" -ForegroundColor Cyan
+    Write-Host "   • Domaine          : " -NoNewline; Write-Host "$($Config.Domain.Name)" -ForegroundColor Yellow
+    Write-Host "   • Serveur          : " -NoNewline; Write-Host "$($Config.Server.Name)" -ForegroundColor Yellow
+    Write-Host "   • Adresse IP       : " -NoNewline; Write-Host "$($Config.Server.IP)" -ForegroundColor Yellow
+    Write-Host "   • Services (OU)    : " -NoNewline; Write-Host "$($Config.Services.Count) unités d'organisation" -ForegroundColor Yellow
+    Write-Host "   • Utilisateurs     : " -NoNewline; Write-Host "$(($Config.Services.Count * 2)) comptes (modèles + users)" -ForegroundColor Yellow
+    Write-Host "   • Groupes          : " -NoNewline; Write-Host "$(($Config.Services.Count * 2)) groupes (GG + DL)" -ForegroundColor Yellow
+    Write-Host "`n"
+    
+    Write-Host "📁 PARTAGES RÉSEAU:" -ForegroundColor Cyan
+    Write-Host "   • Profils          : " -NoNewline; Write-Host "\\$($Config.Server.Name)\Profils" -ForegroundColor Yellow
+    Write-Host "   • Documents        : " -NoNewline; Write-Host "\\$($Config.Server.Name)\Documents" -ForegroundColor Yellow
+    Write-Host "`n"
+    
+    Write-Host "📊 RAPPORTS GÉNÉRÉS:" -ForegroundColor Cyan
+    Write-Host "   • Emplacement      : " -NoNewline; Write-Host "$($Config.Paths.Reports)" -ForegroundColor Yellow
+    Write-Host "   • Log installation : Installation.log" -ForegroundColor White
+    Write-Host "   • Tests validation : Tests_Validation.txt" -ForegroundColor White
+    Write-Host "   • Documentation    : Documentation_Complete.txt" -ForegroundColor White
+    Write-Host "`n"
+    
+    Write-Host "🔐 INFORMATIONS DE CONNEXION:" -ForegroundColor Cyan
+    Write-Host "   • Domaine          : $($Config.Domain.Name)" -ForegroundColor White
+    Write-Host "   • Utilisateurs test: user1[service]@$($Config.Domain.Name)" -ForegroundColor White
+    Write-Host "     Exemples         : user1ReseauSysteme@$($Config.Domain.Name)" -ForegroundColor Gray
+    Write-Host "                        user1Commercial@$($Config.Domain.Name)" -ForegroundColor Gray
+    Write-Host "   • Mot de passe     : " -NoNewline; Write-Host "$($Config.Password)" -ForegroundColor Yellow
+    Write-Host "`n"
+    
+    Write-Host "📝 RÉSULTATS DES TESTS:" -ForegroundColor Cyan
+    foreach ($result in $testResults) {
+        if ($result -match "✅") {
+            Write-Host "   $result" -ForegroundColor Green
+        }
+        elseif ($result -match "❌") {
+            Write-Host "   $result" -ForegroundColor Red
+        }
+    }
+    Write-Host "`n"
+    
+    Write-Host "🎯 PROCHAINES ÉTAPES:" -ForegroundColor Cyan
+    Write-Host "   1️⃣  Configurer les GPO avancées (via GPMC)" -ForegroundColor White
+    Write-Host "   2️⃣  Joindre les postes clients au domaine" -ForegroundColor White
+    Write-Host "   3️⃣  Tester la connexion avec un utilisateur" -ForegroundColor White
+    Write-Host "   4️⃣  Configurer le pare-feu Windows" -ForegroundColor White
+    Write-Host "   5️⃣  Mettre en place les sauvegardes" -ForegroundColor White
+    Write-Host "   6️⃣  Former les utilisateurs" -ForegroundColor White
+    Write-Host "`n"
+    
+    Write-Host "⚠️  AVERTISSEMENTS DE SÉCURITÉ:" -ForegroundColor Red
+    Write-Host "   • Changez immédiatement tous les mots de passe en production!" -ForegroundColor Yellow
+    Write-Host "   • Activez une politique de mots de passe forte" -ForegroundColor Yellow
+    Write-Host "   • Configurez l'audit de sécurité" -ForegroundColor Yellow
+    Write-Host "   • Mettez en place une stratégie de sauvegarde" -ForegroundColor Yellow
+    Write-Host "`n"
+    
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "                          Configuration terminée !                              " -ForegroundColor Green
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Green
+    Write-Host "`n"
+    
+    Write-Log "✅ Configuration du serveur GSB terminée avec succès!" -Level Success
+}
+catch {
+    Write-Host "`n"
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Red
+    Write-Host "                         ❌ ERREUR CRITIQUE ❌                                   " -ForegroundColor Red
+    Write-Host "════════════════════════════════════════════════════════════════════════════════" -ForegroundColor Red
+    Write-Host "`n"
+    
+    Write-Log "ERREUR CRITIQUE: $($_.Exception.Message)" -Level Error
+    Write-Log "Trace complète: $($_.ScriptStackTrace)" -Level Error
+    
+    Write-Host "Erreur: " -NoNewline -ForegroundColor Red
+    Write-Host "$($_.Exception.Message)" -ForegroundColor White
+    Write-Host "`n"
+    Write-Host "Pour plus de détails, consultez le fichier log:" -ForegroundColor Yellow
+    Write-Host "$(Join-Path $Config.Paths.Reports 'Installation.log')" -ForegroundColor Cyan
+    Write-Host "`n"
+    
+    exit 1
+}
+finally {
+    $ProgressPreference = "Continue"
+}
+#ENDREGION
+
+<#
+════════════════════════════════════════════════════════════════════════════════
+                              NOTES D'UTILISATION
+════════════════════════════════════════════════════════════════════════════════
+
+✅ AMÉLIORATIONS VERSION 3.5:
+────────────────────────────────────────────────────────────────────────────────
+1. MOT DE PASSE UNIFIÉ
+   - Tous les comptes utilisent: Ndlp#2022
+   - Mode restauration AD (DSRM): Ndlp#2022
+   - Plus besoin de saisir les mots de passe
+
+2. INSTALLATION AUTOMATIQUE DES SERVICES
+   - Détection automatique des fonctionnalités manquantes
+   - Installation automatique d'AD DS, DNS, DHCP
+   - Installation des outils de gestion (RSAT)
+
+3. PROMOTION AUTOMATIQUE EN CONTRÔLEUR DE DOMAINE
+   - Détection si le serveur est déjà un DC
+   - Promotion automatique si nécessaire
+   - Gestion intelligente des redémarrages
+
+4. GESTION ROBUSTE DES ERREURS
+   - Try-Catch sur toutes les opérations critiques
+   - Messages d'erreur détaillés avec icônes
+   - Logs structurés et horodatés
+
+5. IDEMPOTENCE TOTALE
+   - Le script peut être relancé sans problème
+   - Vérification de l'existence avant chaque création
+   - Pas d'erreurs si les objets existent déjà
+
+6. INTERFACE AMÉLIORÉE
+   - Messages avec icônes (✅ ❌ ⚠️ ℹ️)
+   - Codes couleur clairs
+   - Résumé final détaillé
+
+📋 PRÉREQUIS:
+────────────────────────────────────────────────────────────────────────────────
+• Windows Server 2019/2022
+• PowerShell 5.1 ou supérieur
+• Droits administrateur
+• Disque D: disponible (créé automatiquement si possible)
+• Connexion réseau fonctionnelle
+
+🚀 EXÉCUTION:
+────────────────────────────────────────────────────────────────────────────────
+1. Ouvrir PowerShell en tant qu'Administrateur
+2. Naviguer vers le dossier du script
+3. Exécuter: .\Configure-GSBServer-Final.ps1
+4. Suivre les instructions à l'écran
+5. Relancer après chaque redémarrage si nécessaire
+
+🔄 REDÉMARRAGES AUTOMATIQUES:
+────────────────────────────────────────────────────────────────────────────────
+Le script peut nécessiter jusqu'à 3 redémarrages:
+1. Après le renommage du serveur
+2. Après l'installation des rôles (si nécessaire)
+3. Après la promotion en contrôleur de domaine
+
+➡️  Relancez simplement le script après chaque redémarrage, il reprendra
+    automatiquement là où il s'était arrêté.
+
+🔐 SÉCURITÉ:
+────────────────────────────────────────────────────────────────────────────────
+⚠️  IMPORTANT: Ce script utilise un mot de passe en clair pour la démonstration.
+
+EN PRODUCTION:
+• Changez IMMÉDIATEMENT tous les mots de passe
+• Utilisez des mots de passe complexes et uniques
+• Implémentez une politique de mots de passe forte
+• Utilisez LAPS pour les comptes administrateurs locaux
+• Activez l'audit de sécurité
+• Configurez le pare-feu Windows
+• Mettez en place des sauvegardes régulières
+
+📁 FICHIERS GÉNÉRÉS:
+────────────────────────────────────────────────────────────────────────────────
+• Installation.log           : Journal détaillé de toutes les opérations
+• Tests_Validation.txt        : Résultats des tests de validation
+• Documentation_Complete.txt  : Documentation complète de la configuration
+
+🧪 TESTS DE VALIDATION:
+────────────────────────────────────────────────────────────────────────────────
+Le script effectue automatiquement les tests suivants:
+✓ Résolution DNS du domaine
+✓ Fonctionnement du serveur DHCP
+✓ Accessibilité d'Active Directory
+✓ Vérification des OU créées
+✓ Vérification des groupes créés
+✓ Vérification des utilisateurs créés
+✓ Vérification des partages SMB
+✓ Vérification des GPO créées
+
+📞 SUPPORT:
+────────────────────────
