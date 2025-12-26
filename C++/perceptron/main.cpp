@@ -12,6 +12,13 @@ double Loss(double y, double y_) {
 double sigmoide(double x) {
   return 1 / (1 + exp(-x));
 }
+int ReLu(double x) {
+  if (x <= 0.5) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
 
 
 int main() {
@@ -35,13 +42,13 @@ int main() {
 
 
   // Boucle d'entrainement
-  for (int epoch = 0; epoch < 50000; epoch++) {
+  for (int epoch = 0; epoch < 10000; epoch++) {
 
     // lister les données ( boucle sur la dataset )
     for (int i = 0; i < sizeof(x) / sizeof(x[0]); i++) {
 
       // Calcul de la sortie du perceptron
-      double y = (x[i][0] * w[0]) + (x[i][1] * w[1]);
+      double y = (x[i][0] * w[0]) + (x[i][1] * w[1]) + b;
       double out = sigmoide(y);
       
       double e = Loss(out, yy[i]);
@@ -57,7 +64,7 @@ int main() {
         w[j] = w[j] - learning_rate * (out - yy[i]) * x[i][j];
 
         // mis à jours du biais
-        b += b - (learning_rate * (out - yy[i]));
+        b = b - (learning_rate * (out - yy[i]));
 
       }
 
@@ -68,11 +75,10 @@ int main() {
   cout << "Fin de l'entrainement !" << endl;
 
   for (int i = 0; i < sizeof(x) / sizeof(x[0]); i++) {
-
-    double y = (x[i][0] * w[0]) + (x[i][1] * w[1]);
+    double y = (x[i][0] * w[0]) + (x[i][1] * w[1]) + b;
     double out = sigmoide(y);
 
-    cout << "[" << x[i][0] << " " << x[i][1] << "] -> " << yy[i] << " | sortie perceptron: " << out << endl;
+    cout << "[" << x[i][0] << " " << x[i][1] << "] -> " << yy[i] << " | sortie perceptron: " << ReLu(out) << endl;
   }
 
 }
