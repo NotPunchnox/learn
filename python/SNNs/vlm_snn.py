@@ -14,15 +14,22 @@ VOCAB = {"<PAD>": 0, "Calme": 1, "Mouvement_Rapide": 2, "Obstacle_Proche": 3}
 ITOS = {v: k for k, v in VOCAB.items()}
 N_EMBD = 64
 
+# Paramètres optimisés
+RESIZE_DIM = (160, 160)  # Taille optimale pour équilibre détail/performance
+THRESHOLD = 1.0          # Sensibilité du neurone optimale (plus de spikes visibles)
+BETA = 0.5               # Décroissance rapide pour meilleure réactivité temporelle
+MIN_SPIKE_THRESHOLD = 0.3  # Seuil optimal pour capturer l'activité neuronale
+
 class SpikingVLM(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv = nn.Conv2d(1, 16, kernel_size=5, stride=2)
         self.bn = nn.BatchNorm2d(16)
-        self.lif = snn.Leaky(beta=0.9, threshold=1.0, spike_grad=surrogate.fast_sigmoid())
+        self.lif = snn.Leaky(beta=BETA, threshold=THRESHOLD, spike_grad=surrogate.fast_sigmoid())
         
         self.flatten = nn.Flatten()
-        self.proj = nn.Linear(16 * 62 * 62, N_EMBD)
+        # Adjusted for 160x160 input: (160-5)/2+1 = 78
+        self.proj = nn.Linear(16 * 78 * 78, N_EMBD)
         self.dropout = nn.Dropout(0.2)
         
         self.decoder_layer = nn.TransformerDecoderLayer(d_model=N_EMBD, nhead=4, batch_first=True, dropout=0.1)
@@ -44,6 +51,8 @@ class SpikingVLM(nn.Module):
         for step in range(video_seq.size(0)):
             cur = self.bn(self.conv(video_seq[step]))
             spk, mem = self.lif(cur, mem)
+            # Apply minimum spike threshold
+            spk = spk * (spk > MIN_SPIKE_THRESHOLD).float()
             spk_sum += spk
             
         x = self.flatten(spk_sum)
@@ -55,7 +64,7 @@ class SpikingVLM(nn.Module):
         return logits
 
 def get_dummy_data():
-    dummy_video = torch.randn(TIME_STEPS, 1, 1, 128, 128).to(DEVICE)
+    dummy_video = torch.randn(TIME_STEPS, 1, 1, RESIZE_DIM[0], RESIZE_DIM[1]).to(DEVICE)
     label = torch.randint(1, len(VOCAB), (1,)).to(DEVICE)
     return dummy_video, label
 
@@ -77,7 +86,7 @@ def capture_training_data(label_name, num_samples=5):
                 if not ret:
                     break
                 gray = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
-                res = cv2.resize(gray, (128, 128))
+                res = cv2.resize(gray, RESIZE_DIM)
                 seq.append(torch.FloatTensor(res).unsqueeze(0) / 255.0)
             if len(seq) == TIME_STEPS:
                 samples.append(torch.stack(seq))
@@ -190,7 +199,7 @@ def start_inference(model_path="fast_vlm.pth"):
             break
         
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        resized = cv2.resize(gray, (128, 128))
+        resized = cv2.resize(gray, RESIZE_DIM)
         tensor_frame = torch.FloatTensor(resized).unsqueeze(0).unsqueeze(0).to(DEVICE) / 255.0
         
         frame_buffer.append(tensor_frame)
@@ -241,7 +250,7 @@ if __name__ == "__main__":
                 VOCAB["Mouvement_Rapide"]: data_mouvement
             }
             net = SpikingVLM().to(DEVICE)
-            train_balanced(net, data_dict, epochs=200)
+            train_balanced(net, data_dict, epochs=120)
             print("Entraînement équilibré terminé. Vous pouvez maintenant lancer l'inférence (option 3)")
         else:
             print("Erreur lors de la capture des données")
